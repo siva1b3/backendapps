@@ -1,0 +1,49 @@
+version: "3.8"
+
+volumes:
+  task_manager_app_postgres_data:
+    name: task_manager_app_postgres_data
+  task_manager_app_pgadmin_data:
+    name: task_manager_app_pgadmin_data
+
+networks:
+  task_manager_app_network:
+    driver: bridge
+    name: task_manager_app_network
+
+services:
+  task_manager_app_postgres_image:
+    image: postgres:latest
+    container_name: task_manager_app_postgres_conatiner
+    restart: always
+    environment:
+      POSTGRES_USER: admin_user
+      POSTGRES_PASSWORD: admin_password
+      POSTGRES_DB: task_manager_app_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - task_manager_app_postgres_data:/var/lib/postgresql/data
+    networks:
+      - task_manager_app_network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "admin_user"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  task_manager_app_pgadmin_image:
+    image: dpage/pgadmin4
+    container_name: task_manager_app_pgadmin_container
+    depends_on:
+      - task_manager_app_postgres_image
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    volumes:
+      - task_manager_app_pgadmin_data:/var/lib/pgadmin
+    networks:
+      - task_manager_app_network
