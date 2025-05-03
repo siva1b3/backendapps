@@ -5,70 +5,26 @@
 -- Dumped from database version 17.4 (Debian 17.4-1.pgdg120+2)
 -- Dumped by pg_dump version 17.4
 
--- Started on 2025-04-06 13:36:59 UTC
+-- Started on 2025-05-03 04:26:26 UTC
 
--- SET statement_timeout = 0;
--- SET lock_timeout = 0;
--- SET idle_in_transaction_session_timeout = 0;
--- SET transaction_timeout = 0;
--- SET client_encoding = 'UTF8';
--- SET standard_conforming_strings = on;
--- SELECT pg_catalog.set_config('search_path', '', false);
--- SET check_function_bodies = false;
--- SET xmloption = content;
--- SET client_min_messages = warning;
--- SET row_security = off;
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
 
--- DROP DATABASE IF EXISTS task_manager_app_db;
--- --
--- TOC entry 3419 (class 1262 OID 16384)
--- Name: task_manager_app_db; Type: DATABASE; Schema: -; Owner: admin_user
---
+SET default_tablespace = '';
 
--- CREATE DATABASE task_manager_app_db WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'en_US.utf8';
-
-
--- ALTER DATABASE task_manager_app_db OWNER TO admin_user;
-
--- \connect task_manager_app_db
-
--- SET statement_timeout = 0;
--- SET lock_timeout = 0;
--- SET idle_in_transaction_session_timeout = 0;
--- SET transaction_timeout = 0;
--- SET client_encoding = 'UTF8';
--- SET standard_conforming_strings = on;
--- SELECT pg_catalog.set_config('search_path', '', false);
--- SET check_function_bodies = false;
--- SET xmloption = content;
--- SET client_min_messages = warning;
--- SET row_security = off;
+SET default_table_access_method = heap;
 
 --
--- TOC entry 4 (class 2615 OID 2200)
--- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
---
-
--- CREATE SCHEMA public;
-
-
--- ALTER SCHEMA public OWNER TO pg_database_owner;
-
---
--- TOC entry 3420 (class 0 OID 0)
--- Dependencies: 4
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
--- --
-
--- COMMENT ON SCHEMA public IS 'standard public schema';
-
-
--- SET default_tablespace = '';
-
--- SET default_table_access_method = heap;
-
---
--- TOC entry 221 (class 1259 OID 16506)
+-- TOC entry 217 (class 1259 OID 16389)
 -- Name: a0_task; Type: TABLE; Schema: public; Owner: admin_user
 --
 
@@ -88,8 +44,8 @@ CREATE TABLE public.a0_task (
 ALTER TABLE public.a0_task OWNER TO admin_user;
 
 --
--- TOC entry 3421 (class 0 OID 0)
--- Dependencies: 221
+-- TOC entry 3419 (class 0 OID 0)
+-- Dependencies: 217
 -- Name: TABLE a0_task; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -97,8 +53,8 @@ COMMENT ON TABLE public.a0_task IS 'Central task management table that tracks al
 
 
 --
--- TOC entry 3422 (class 0 OID 0)
--- Dependencies: 221
+-- TOC entry 3420 (class 0 OID 0)
+-- Dependencies: 217
 -- Name: COLUMN a0_task.task_id; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -106,8 +62,8 @@ COMMENT ON COLUMN public.a0_task.task_id IS 'Auto-incrementing unique task ident
 
 
 --
--- TOC entry 3423 (class 0 OID 0)
--- Dependencies: 221
+-- TOC entry 3421 (class 0 OID 0)
+-- Dependencies: 217
 -- Name: COLUMN a0_task.task_title; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -115,8 +71,8 @@ COMMENT ON COLUMN public.a0_task.task_title IS 'Short descriptive title of the t
 
 
 --
--- TOC entry 3424 (class 0 OID 0)
--- Dependencies: 221
+-- TOC entry 3422 (class 0 OID 0)
+-- Dependencies: 217
 -- Name: COLUMN a0_task.task_description; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -124,8 +80,8 @@ COMMENT ON COLUMN public.a0_task.task_description IS 'Detailed explanation of ta
 
 
 --
--- TOC entry 3425 (class 0 OID 0)
--- Dependencies: 221
+-- TOC entry 3423 (class 0 OID 0)
+-- Dependencies: 217
 -- Name: COLUMN a0_task.task_date; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -133,8 +89,8 @@ COMMENT ON COLUMN public.a0_task.task_date IS 'Timestamp when task was need to c
 
 
 --
--- TOC entry 3426 (class 0 OID 0)
--- Dependencies: 221
+-- TOC entry 3424 (class 0 OID 0)
+-- Dependencies: 217
 -- Name: COLUMN a0_task.task_status; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -142,8 +98,8 @@ COMMENT ON COLUMN public.a0_task.task_status IS 'Current workflow state (FK to s
 
 
 --
--- TOC entry 3427 (class 0 OID 0)
--- Dependencies: 221
+-- TOC entry 3425 (class 0 OID 0)
+-- Dependencies: 217
 -- Name: COLUMN a0_task.task_priority; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -151,8 +107,8 @@ COMMENT ON COLUMN public.a0_task.task_priority IS 'Importance level (FK to stc_p
 
 
 --
--- TOC entry 3428 (class 0 OID 0)
--- Dependencies: 221
+-- TOC entry 3426 (class 0 OID 0)
+-- Dependencies: 217
 -- Name: COLUMN a0_task.task_category; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -160,8 +116,8 @@ COMMENT ON COLUMN public.a0_task.task_category IS 'Classification group (FK to s
 
 
 --
--- TOC entry 3429 (class 0 OID 0)
--- Dependencies: 221
+-- TOC entry 3427 (class 0 OID 0)
+-- Dependencies: 217
 -- Name: COLUMN a0_task.created_date; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -169,8 +125,8 @@ COMMENT ON COLUMN public.a0_task.created_date IS 'Timestamp when task was first 
 
 
 --
--- TOC entry 3430 (class 0 OID 0)
--- Dependencies: 221
+-- TOC entry 3428 (class 0 OID 0)
+-- Dependencies: 217
 -- Name: COLUMN a0_task.updated_date; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -178,7 +134,7 @@ COMMENT ON COLUMN public.a0_task.updated_date IS 'Timestamp when task was last m
 
 
 --
--- TOC entry 220 (class 1259 OID 16505)
+-- TOC entry 218 (class 1259 OID 16395)
 -- Name: a0_task_task_id_seq; Type: SEQUENCE; Schema: public; Owner: admin_user
 --
 
@@ -193,8 +149,8 @@ CREATE SEQUENCE public.a0_task_task_id_seq
 ALTER SEQUENCE public.a0_task_task_id_seq OWNER TO admin_user;
 
 --
--- TOC entry 3431 (class 0 OID 0)
--- Dependencies: 220
+-- TOC entry 3429 (class 0 OID 0)
+-- Dependencies: 218
 -- Name: a0_task_task_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin_user
 --
 
@@ -202,7 +158,7 @@ ALTER SEQUENCE public.a0_task_task_id_seq OWNED BY public.a0_task.task_id;
 
 
 --
--- TOC entry 225 (class 1259 OID 16553)
+-- TOC entry 219 (class 1259 OID 16396)
 -- Name: b1_comment; Type: TABLE; Schema: public; Owner: admin_user
 --
 
@@ -218,8 +174,8 @@ CREATE TABLE public.b1_comment (
 ALTER TABLE public.b1_comment OWNER TO admin_user;
 
 --
--- TOC entry 3432 (class 0 OID 0)
--- Dependencies: 225
+-- TOC entry 3430 (class 0 OID 0)
+-- Dependencies: 219
 -- Name: TABLE b1_comment; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -227,8 +183,8 @@ COMMENT ON TABLE public.b1_comment IS 'Stores task comments with referential int
 
 
 --
--- TOC entry 3433 (class 0 OID 0)
--- Dependencies: 225
+-- TOC entry 3431 (class 0 OID 0)
+-- Dependencies: 219
 -- Name: COLUMN b1_comment.comment_id; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -236,8 +192,8 @@ COMMENT ON COLUMN public.b1_comment.comment_id IS 'Auto-incrementing primary key
 
 
 --
--- TOC entry 3434 (class 0 OID 0)
--- Dependencies: 225
+-- TOC entry 3432 (class 0 OID 0)
+-- Dependencies: 219
 -- Name: COLUMN b1_comment.task_id; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -245,8 +201,8 @@ COMMENT ON COLUMN public.b1_comment.task_id IS 'Foreign key reference to parent 
 
 
 --
--- TOC entry 3435 (class 0 OID 0)
--- Dependencies: 225
+-- TOC entry 3433 (class 0 OID 0)
+-- Dependencies: 219
 -- Name: COLUMN b1_comment.comment_text; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -254,8 +210,8 @@ COMMENT ON COLUMN public.b1_comment.comment_text IS 'The full text content of th
 
 
 --
--- TOC entry 3436 (class 0 OID 0)
--- Dependencies: 225
+-- TOC entry 3434 (class 0 OID 0)
+-- Dependencies: 219
 -- Name: COLUMN b1_comment.created_at; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -263,8 +219,8 @@ COMMENT ON COLUMN public.b1_comment.created_at IS 'Timestamp when comment was in
 
 
 --
--- TOC entry 3437 (class 0 OID 0)
--- Dependencies: 225
+-- TOC entry 3435 (class 0 OID 0)
+-- Dependencies: 219
 -- Name: COLUMN b1_comment.updated_at; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -272,7 +228,7 @@ COMMENT ON COLUMN public.b1_comment.updated_at IS 'Timestamp when comment was la
 
 
 --
--- TOC entry 224 (class 1259 OID 16552)
+-- TOC entry 220 (class 1259 OID 16402)
 -- Name: b1_comment_comment_id_seq; Type: SEQUENCE; Schema: public; Owner: admin_user
 --
 
@@ -287,8 +243,8 @@ CREATE SEQUENCE public.b1_comment_comment_id_seq
 ALTER SEQUENCE public.b1_comment_comment_id_seq OWNER TO admin_user;
 
 --
--- TOC entry 3438 (class 0 OID 0)
--- Dependencies: 224
+-- TOC entry 3436 (class 0 OID 0)
+-- Dependencies: 220
 -- Name: b1_comment_comment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin_user
 --
 
@@ -296,7 +252,7 @@ ALTER SEQUENCE public.b1_comment_comment_id_seq OWNED BY public.b1_comment.comme
 
 
 --
--- TOC entry 219 (class 1259 OID 16408)
+-- TOC entry 221 (class 1259 OID 16403)
 -- Name: stc_category; Type: TABLE; Schema: public; Owner: admin_user
 --
 
@@ -311,8 +267,8 @@ CREATE TABLE public.stc_category (
 ALTER TABLE public.stc_category OWNER TO admin_user;
 
 --
--- TOC entry 3439 (class 0 OID 0)
--- Dependencies: 219
+-- TOC entry 3437 (class 0 OID 0)
+-- Dependencies: 221
 -- Name: TABLE stc_category; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -320,7 +276,7 @@ COMMENT ON TABLE public.stc_category IS 'Stores different categories for classif
 
 
 --
--- TOC entry 218 (class 1259 OID 16400)
+-- TOC entry 222 (class 1259 OID 16409)
 -- Name: stc_priority; Type: TABLE; Schema: public; Owner: admin_user
 --
 
@@ -335,8 +291,8 @@ CREATE TABLE public.stc_priority (
 ALTER TABLE public.stc_priority OWNER TO admin_user;
 
 --
--- TOC entry 3440 (class 0 OID 0)
--- Dependencies: 218
+-- TOC entry 3438 (class 0 OID 0)
+-- Dependencies: 222
 -- Name: TABLE stc_priority; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -344,7 +300,7 @@ COMMENT ON TABLE public.stc_priority IS 'Stores priority information for applica
 
 
 --
--- TOC entry 217 (class 1259 OID 16392)
+-- TOC entry 223 (class 1259 OID 16415)
 -- Name: stc_status; Type: TABLE; Schema: public; Owner: admin_user
 --
 
@@ -359,8 +315,8 @@ CREATE TABLE public.stc_status (
 ALTER TABLE public.stc_status OWNER TO admin_user;
 
 --
--- TOC entry 3441 (class 0 OID 0)
--- Dependencies: 217
+-- TOC entry 3439 (class 0 OID 0)
+-- Dependencies: 223
 -- Name: TABLE stc_status; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -368,7 +324,7 @@ COMMENT ON TABLE public.stc_status IS 'Stores status information for application
 
 
 --
--- TOC entry 223 (class 1259 OID 16534)
+-- TOC entry 224 (class 1259 OID 16421)
 -- Name: z_task_history; Type: TABLE; Schema: public; Owner: admin_user
 --
 
@@ -389,8 +345,8 @@ CREATE TABLE public.z_task_history (
 ALTER TABLE public.z_task_history OWNER TO admin_user;
 
 --
--- TOC entry 3442 (class 0 OID 0)
--- Dependencies: 223
+-- TOC entry 3440 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: TABLE z_task_history; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -398,8 +354,8 @@ COMMENT ON TABLE public.z_task_history IS 'Comprehensive audit trail for all cha
 
 
 --
--- TOC entry 3443 (class 0 OID 0)
--- Dependencies: 223
+-- TOC entry 3441 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: COLUMN z_task_history.history_id; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -407,8 +363,8 @@ COMMENT ON COLUMN public.z_task_history.history_id IS 'Auto-incrementing audit r
 
 
 --
--- TOC entry 3444 (class 0 OID 0)
--- Dependencies: 223
+-- TOC entry 3442 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: COLUMN z_task_history.task_id; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -416,8 +372,8 @@ COMMENT ON COLUMN public.z_task_history.task_id IS 'Original task ID reference t
 
 
 --
--- TOC entry 3445 (class 0 OID 0)
--- Dependencies: 223
+-- TOC entry 3443 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: COLUMN z_task_history.task_title; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -425,8 +381,8 @@ COMMENT ON COLUMN public.z_task_history.task_title IS 'Task title at time of cha
 
 
 --
--- TOC entry 3446 (class 0 OID 0)
--- Dependencies: 223
+-- TOC entry 3444 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: COLUMN z_task_history.task_description; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -434,8 +390,8 @@ COMMENT ON COLUMN public.z_task_history.task_description IS 'Full task descripti
 
 
 --
--- TOC entry 3447 (class 0 OID 0)
--- Dependencies: 223
+-- TOC entry 3445 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: COLUMN z_task_history.task_status; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -443,8 +399,8 @@ COMMENT ON COLUMN public.z_task_history.task_status IS 'Status value when change
 
 
 --
--- TOC entry 3448 (class 0 OID 0)
--- Dependencies: 223
+-- TOC entry 3446 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: COLUMN z_task_history.task_priority; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -452,8 +408,8 @@ COMMENT ON COLUMN public.z_task_history.task_priority IS 'Priority level when ch
 
 
 --
--- TOC entry 3449 (class 0 OID 0)
--- Dependencies: 223
+-- TOC entry 3447 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: COLUMN z_task_history.task_category; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -461,8 +417,8 @@ COMMENT ON COLUMN public.z_task_history.task_category IS 'Category when change o
 
 
 --
--- TOC entry 3450 (class 0 OID 0)
--- Dependencies: 223
+-- TOC entry 3448 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: COLUMN z_task_history.change_timestamp; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -470,8 +426,8 @@ COMMENT ON COLUMN public.z_task_history.change_timestamp IS 'Exact time when cha
 
 
 --
--- TOC entry 3451 (class 0 OID 0)
--- Dependencies: 223
+-- TOC entry 3449 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: COLUMN z_task_history.operation_type; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -479,7 +435,7 @@ COMMENT ON COLUMN public.z_task_history.operation_type IS 'Type of operation: IN
 
 
 --
--- TOC entry 222 (class 1259 OID 16533)
+-- TOC entry 225 (class 1259 OID 16427)
 -- Name: z_task_history_history_id_seq; Type: SEQUENCE; Schema: public; Owner: admin_user
 --
 
@@ -494,8 +450,8 @@ CREATE SEQUENCE public.z_task_history_history_id_seq
 ALTER SEQUENCE public.z_task_history_history_id_seq OWNER TO admin_user;
 
 --
--- TOC entry 3452 (class 0 OID 0)
--- Dependencies: 222
+-- TOC entry 3450 (class 0 OID 0)
+-- Dependencies: 225
 -- Name: z_task_history_history_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin_user
 --
 
@@ -503,7 +459,7 @@ ALTER SEQUENCE public.z_task_history_history_id_seq OWNED BY public.z_task_histo
 
 
 --
--- TOC entry 3235 (class 2604 OID 16509)
+-- TOC entry 3232 (class 2604 OID 16428)
 -- Name: a0_task task_id; Type: DEFAULT; Schema: public; Owner: admin_user
 --
 
@@ -511,7 +467,7 @@ ALTER TABLE ONLY public.a0_task ALTER COLUMN task_id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3239 (class 2604 OID 16556)
+-- TOC entry 3234 (class 2604 OID 16429)
 -- Name: b1_comment comment_id; Type: DEFAULT; Schema: public; Owner: admin_user
 --
 
@@ -519,7 +475,7 @@ ALTER TABLE ONLY public.b1_comment ALTER COLUMN comment_id SET DEFAULT nextval('
 
 
 --
--- TOC entry 3237 (class 2604 OID 16537)
+-- TOC entry 3239 (class 2604 OID 16430)
 -- Name: z_task_history history_id; Type: DEFAULT; Schema: public; Owner: admin_user
 --
 
@@ -527,101 +483,113 @@ ALTER TABLE ONLY public.z_task_history ALTER COLUMN history_id SET DEFAULT nextv
 
 
 --
--- TOC entry 3409 (class 0 OID 16506)
--- Dependencies: 221
+-- TOC entry 3405 (class 0 OID 16389)
+-- Dependencies: 217
 -- Data for Name: a0_task; Type: TABLE DATA; Schema: public; Owner: admin_user
 --
 
-INSERT INTO public.a0_task VALUES (5, 'siva', 'siva', '2025-04-06 06:49:55.610807', 'completed', 'urgent', 'Others', '2025-04-06 06:49:55.610807', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (6, 'siva', 'siva', '2025-04-06 06:49:55.773915', 'completed', 'urgent', 'Others', '2025-04-06 06:49:55.773915', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (7, 'siva', 'siva', '2025-04-06 06:49:55.943309', 'completed', 'urgent', 'Others', '2025-04-06 06:49:55.943309', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (8, 'siva', 'siva', '2025-04-06 06:49:56.110204', 'completed', 'urgent', 'Others', '2025-04-06 06:49:56.110204', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (9, 'siva', 'siva', '2025-04-06 06:49:56.272057', 'completed', 'urgent', 'Others', '2025-04-06 06:49:56.272057', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (10, 'siva', 'siva', '2025-04-06 06:49:56.482109', 'completed', 'urgent', 'Others', '2025-04-06 06:49:56.482109', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (12, 'siva', 'siva', '2025-04-06 06:49:59.370273', 'completed', 'urgent', 'Others', '2025-04-06 06:49:59.370273', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (13, 'siva', 'siva', '2025-04-06 06:49:59.537203', 'completed', 'urgent', 'Others', '2025-04-06 06:49:59.537203', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (14, 'siva', 'siva', '2025-04-06 06:49:59.694809', 'completed', 'urgent', 'Others', '2025-04-06 06:49:59.694809', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (15, 'siva', 'siva', '2025-04-06 06:49:59.848534', 'completed', 'urgent', 'Others', '2025-04-06 06:49:59.848534', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (16, 'siva', 'siva', '2025-04-06 06:50:00.00464', 'completed', 'urgent', 'Others', '2025-04-06 06:50:00.00464', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (17, 'siva', 'siva', '2025-04-06 06:50:00.141127', 'completed', 'urgent', 'Others', '2025-04-06 06:50:00.141127', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (18, 'siva', 'siva', '2025-04-06 06:50:00.303207', 'completed', 'urgent', 'Others', '2025-04-06 06:50:00.303207', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (19, 'siva', 'siva', '2025-04-06 06:50:00.447217', 'completed', 'urgent', 'Others', '2025-04-06 06:50:00.447217', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (20, 'siva', 'siva', '2025-04-06 06:50:00.59126', 'completed', 'urgent', 'Others', '2025-04-06 06:50:00.59126', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (21, 'siva', 'siva', '2025-04-06 06:50:00.742759', 'completed', 'urgent', 'Others', '2025-04-06 06:50:00.742759', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (22, 'siva', 'siva', '2025-04-06 06:50:01.057461', 'completed', 'urgent', 'Others', '2025-04-06 06:50:01.057461', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (23, 'siva', 'siva', '2025-04-06 06:50:01.204972', 'completed', 'urgent', 'Others', '2025-04-06 06:50:01.204972', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (24, 'siva', 'siva', '2025-04-06 06:50:01.388562', 'completed', 'urgent', 'Others', '2025-04-06 06:50:01.388562', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (25, 'siva', 'siva', '2025-04-06 06:50:01.607993', 'completed', 'urgent', 'Others', '2025-04-06 06:50:01.607993', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (26, 'siva', 'siva', '2025-04-06 06:49:53.405', 'completed', 'urgent', 'Others', '2025-04-06 06:58:04.057', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (27, 'siva', 'siva', '2025-04-06 06:49:53.405', 'completed', 'urgent', 'Others', '2025-04-06 06:58:07.067', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (28, 'siva', 'siva', '2025-04-06 06:49:53.405', 'completed', 'urgent', 'Others', '2025-04-06 06:58:08.024', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (29, 'siva', 'siva', '2025-04-06 06:49:53.405', 'completed', 'urgent', 'Others', '2025-04-06 06:58:08.897', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (30, 'siva', 'siva', '2025-04-06 06:49:53.405', 'completed', 'urgent', 'Others', '2025-04-06 06:58:09.789', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (31, 'siva', 'siva', '2025-04-06 06:49:53.405', 'completed', 'urgent', 'Others', '2025-04-06 06:58:11.914', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (32, 'siva', 'siva', '2025-04-06 06:49:53.405', 'completed', 'urgent', 'Others', '2025-04-06 06:58:12.864', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (33, 'siva', 'siva', '2025-04-06 06:49:53.405', 'completed', 'urgent', 'Others', '2025-04-06 10:03:11.15', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (34, 'siva', 'siva', '2025-04-06 06:49:53.405', 'completed', 'urgent', 'Others', '2025-04-06 10:04:36.358', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (35, 'siva', 'siva', '2025-04-06 06:49:53.405', 'completed', 'urgent', 'Others', '2025-04-06 11:57:30.963', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (36, 'siva', 'siva', '2025-04-06 06:49:53.405', 'completed', 'urgent', 'Others', '2025-04-06 12:06:31.946', NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.a0_task VALUES (11, 'siva2112', 'siva1212', '2025-04-06 06:49:53.405', 'completed', 'urgent', 'Others', '2025-04-06 06:49:59.212002', NULL) ON CONFLICT DO NOTHING;
+COPY public.a0_task (task_id, task_title, task_description, task_date, task_status, task_priority, task_category, created_date, updated_date) FROM stdin;
+5	siva	siva	2025-04-06 06:49:55.610807	completed	urgent	Others	2025-04-06 06:49:55.610807	\N
+6	siva	siva	2025-04-06 06:49:55.773915	completed	urgent	Others	2025-04-06 06:49:55.773915	\N
+7	siva	siva	2025-04-06 06:49:55.943309	completed	urgent	Others	2025-04-06 06:49:55.943309	\N
+8	siva	siva	2025-04-06 06:49:56.110204	completed	urgent	Others	2025-04-06 06:49:56.110204	\N
+9	siva	siva	2025-04-06 06:49:56.272057	completed	urgent	Others	2025-04-06 06:49:56.272057	\N
+10	siva	siva	2025-04-06 06:49:56.482109	completed	urgent	Others	2025-04-06 06:49:56.482109	\N
+12	siva	siva	2025-04-06 06:49:59.370273	completed	urgent	Others	2025-04-06 06:49:59.370273	\N
+13	siva	siva	2025-04-06 06:49:59.537203	completed	urgent	Others	2025-04-06 06:49:59.537203	\N
+14	siva	siva	2025-04-06 06:49:59.694809	completed	urgent	Others	2025-04-06 06:49:59.694809	\N
+15	siva	siva	2025-04-06 06:49:59.848534	completed	urgent	Others	2025-04-06 06:49:59.848534	\N
+16	siva	siva	2025-04-06 06:50:00.00464	completed	urgent	Others	2025-04-06 06:50:00.00464	\N
+17	siva	siva	2025-04-06 06:50:00.141127	completed	urgent	Others	2025-04-06 06:50:00.141127	\N
+18	siva	siva	2025-04-06 06:50:00.303207	completed	urgent	Others	2025-04-06 06:50:00.303207	\N
+19	siva	siva	2025-04-06 06:50:00.447217	completed	urgent	Others	2025-04-06 06:50:00.447217	\N
+20	siva	siva	2025-04-06 06:50:00.59126	completed	urgent	Others	2025-04-06 06:50:00.59126	\N
+21	siva	siva	2025-04-06 06:50:00.742759	completed	urgent	Others	2025-04-06 06:50:00.742759	\N
+22	siva	siva	2025-04-06 06:50:01.057461	completed	urgent	Others	2025-04-06 06:50:01.057461	\N
+23	siva	siva	2025-04-06 06:50:01.204972	completed	urgent	Others	2025-04-06 06:50:01.204972	\N
+24	siva	siva	2025-04-06 06:50:01.388562	completed	urgent	Others	2025-04-06 06:50:01.388562	\N
+25	siva	siva	2025-04-06 06:50:01.607993	completed	urgent	Others	2025-04-06 06:50:01.607993	\N
+26	siva	siva	2025-04-06 06:49:53.405	completed	urgent	Others	2025-04-06 06:58:04.057	\N
+27	siva	siva	2025-04-06 06:49:53.405	completed	urgent	Others	2025-04-06 06:58:07.067	\N
+28	siva	siva	2025-04-06 06:49:53.405	completed	urgent	Others	2025-04-06 06:58:08.024	\N
+29	siva	siva	2025-04-06 06:49:53.405	completed	urgent	Others	2025-04-06 06:58:08.897	\N
+30	siva	siva	2025-04-06 06:49:53.405	completed	urgent	Others	2025-04-06 06:58:09.789	\N
+31	siva	siva	2025-04-06 06:49:53.405	completed	urgent	Others	2025-04-06 06:58:11.914	\N
+32	siva	siva	2025-04-06 06:49:53.405	completed	urgent	Others	2025-04-06 06:58:12.864	\N
+33	siva	siva	2025-04-06 06:49:53.405	completed	urgent	Others	2025-04-06 10:03:11.15	\N
+34	siva	siva	2025-04-06 06:49:53.405	completed	urgent	Others	2025-04-06 10:04:36.358	\N
+35	siva	siva	2025-04-06 06:49:53.405	completed	urgent	Others	2025-04-06 11:57:30.963	\N
+36	siva	siva	2025-04-06 06:49:53.405	completed	urgent	Others	2025-04-06 12:06:31.946	\N
+11	siva2112	siva1212	2025-04-06 06:49:53.405	completed	urgent	Others	2025-04-06 06:49:59.212002	\N
+\.
 
 
 --
--- TOC entry 3413 (class 0 OID 16553)
--- Dependencies: 225
+-- TOC entry 3407 (class 0 OID 16396)
+-- Dependencies: 219
 -- Data for Name: b1_comment; Type: TABLE DATA; Schema: public; Owner: admin_user
 --
 
+COPY public.b1_comment (comment_id, task_id, comment_text, created_at, updated_at) FROM stdin;
+\.
 
 
 --
--- TOC entry 3407 (class 0 OID 16408)
--- Dependencies: 219
+-- TOC entry 3409 (class 0 OID 16403)
+-- Dependencies: 221
 -- Data for Name: stc_category; Type: TABLE DATA; Schema: public; Owner: admin_user
 --
 
-INSERT INTO public.stc_category VALUES ('Work', '2025-04-05 15:36:59.322888', NULL, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.stc_category VALUES ('Personal', '2025-04-05 15:36:59.322888', NULL, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.stc_category VALUES ('Shopping', '2025-04-05 15:36:59.322888', NULL, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.stc_category VALUES ('Health', '2025-04-05 15:36:59.322888', NULL, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.stc_category VALUES ('Others', '2025-04-05 15:36:59.322888', NULL, NULL) ON CONFLICT DO NOTHING;
+COPY public.stc_category (category_name, created_date, updated_date, update_reason) FROM stdin;
+Work	2025-04-05 15:36:59.322888	\N	\N
+Personal	2025-04-05 15:36:59.322888	\N	\N
+Shopping	2025-04-05 15:36:59.322888	\N	\N
+Health	2025-04-05 15:36:59.322888	\N	\N
+Others	2025-04-05 15:36:59.322888	\N	\N
+\.
 
 
 --
--- TOC entry 3406 (class 0 OID 16400)
--- Dependencies: 218
+-- TOC entry 3410 (class 0 OID 16409)
+-- Dependencies: 222
 -- Data for Name: stc_priority; Type: TABLE DATA; Schema: public; Owner: admin_user
 --
 
-INSERT INTO public.stc_priority VALUES ('low', '2025-04-05 15:35:04.678662', NULL, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.stc_priority VALUES ('medium', '2025-04-05 15:35:04.678662', NULL, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.stc_priority VALUES ('high', '2025-04-05 15:35:04.678662', NULL, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.stc_priority VALUES ('urgent', '2025-04-05 15:35:04.678662', NULL, NULL) ON CONFLICT DO NOTHING;
+COPY public.stc_priority (app_priority, created_date, updated_date, update_reason) FROM stdin;
+low	2025-04-05 15:35:04.678662	\N	\N
+medium	2025-04-05 15:35:04.678662	\N	\N
+high	2025-04-05 15:35:04.678662	\N	\N
+urgent	2025-04-05 15:35:04.678662	\N	\N
+\.
 
 
 --
--- TOC entry 3405 (class 0 OID 16392)
--- Dependencies: 217
+-- TOC entry 3411 (class 0 OID 16415)
+-- Dependencies: 223
 -- Data for Name: stc_status; Type: TABLE DATA; Schema: public; Owner: admin_user
 --
 
-INSERT INTO public.stc_status VALUES ('pending', '2025-04-05 15:34:35.891506', NULL, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.stc_status VALUES ('in_progress', '2025-04-05 15:34:35.891506', NULL, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.stc_status VALUES ('completed', '2025-04-05 15:34:35.891506', NULL, NULL) ON CONFLICT DO NOTHING;
-INSERT INTO public.stc_status VALUES ('cancelled', '2025-04-05 15:34:35.891506', NULL, NULL) ON CONFLICT DO NOTHING;
+COPY public.stc_status (app_status, created_date, updated_date, update_reason) FROM stdin;
+pending	2025-04-05 15:34:35.891506	\N	\N
+in_progress	2025-04-05 15:34:35.891506	\N	\N
+completed	2025-04-05 15:34:35.891506	\N	\N
+cancelled	2025-04-05 15:34:35.891506	\N	\N
+\.
 
 
 --
--- TOC entry 3411 (class 0 OID 16534)
--- Dependencies: 223
+-- TOC entry 3412 (class 0 OID 16421)
+-- Dependencies: 224
 -- Data for Name: z_task_history; Type: TABLE DATA; Schema: public; Owner: admin_user
 --
 
+COPY public.z_task_history (history_id, task_id, task_title, task_description, task_date, task_status, task_priority, task_category, change_timestamp, operation_type) FROM stdin;
+\.
 
 
 --
--- TOC entry 3453 (class 0 OID 0)
--- Dependencies: 220
+-- TOC entry 3451 (class 0 OID 0)
+-- Dependencies: 218
 -- Name: a0_task_task_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin_user
 --
 
@@ -629,8 +597,8 @@ SELECT pg_catalog.setval('public.a0_task_task_id_seq', 36, true);
 
 
 --
--- TOC entry 3454 (class 0 OID 0)
--- Dependencies: 224
+-- TOC entry 3452 (class 0 OID 0)
+-- Dependencies: 220
 -- Name: b1_comment_comment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin_user
 --
 
@@ -638,8 +606,8 @@ SELECT pg_catalog.setval('public.b1_comment_comment_id_seq', 1, false);
 
 
 --
--- TOC entry 3455 (class 0 OID 0)
--- Dependencies: 222
+-- TOC entry 3453 (class 0 OID 0)
+-- Dependencies: 225
 -- Name: z_task_history_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin_user
 --
 
@@ -647,7 +615,7 @@ SELECT pg_catalog.setval('public.z_task_history_history_id_seq', 1, false);
 
 
 --
--- TOC entry 3248 (class 2606 OID 16514)
+-- TOC entry 3242 (class 2606 OID 16432)
 -- Name: a0_task PK_a0_task__task_id; Type: CONSTRAINT; Schema: public; Owner: admin_user
 --
 
@@ -656,7 +624,7 @@ ALTER TABLE ONLY public.a0_task
 
 
 --
--- TOC entry 3254 (class 2606 OID 16561)
+-- TOC entry 3245 (class 2606 OID 16434)
 -- Name: b1_comment PK_b1_comment__comment_id; Type: CONSTRAINT; Schema: public; Owner: admin_user
 --
 
@@ -665,7 +633,7 @@ ALTER TABLE ONLY public.b1_comment
 
 
 --
--- TOC entry 3246 (class 2606 OID 16415)
+-- TOC entry 3247 (class 2606 OID 16436)
 -- Name: stc_category PK_stc_category__category_name; Type: CONSTRAINT; Schema: public; Owner: admin_user
 --
 
@@ -674,7 +642,7 @@ ALTER TABLE ONLY public.stc_category
 
 
 --
--- TOC entry 3244 (class 2606 OID 16407)
+-- TOC entry 3249 (class 2606 OID 16438)
 -- Name: stc_priority PK_stc_priority__app_priority; Type: CONSTRAINT; Schema: public; Owner: admin_user
 --
 
@@ -683,7 +651,7 @@ ALTER TABLE ONLY public.stc_priority
 
 
 --
--- TOC entry 3242 (class 2606 OID 16399)
+-- TOC entry 3251 (class 2606 OID 16440)
 -- Name: stc_status PK_stc_status__app_status; Type: CONSTRAINT; Schema: public; Owner: admin_user
 --
 
@@ -692,7 +660,7 @@ ALTER TABLE ONLY public.stc_status
 
 
 --
--- TOC entry 3251 (class 2606 OID 16542)
+-- TOC entry 3254 (class 2606 OID 16442)
 -- Name: z_task_history PK_z_task_history__history_id; Type: CONSTRAINT; Schema: public; Owner: admin_user
 --
 
@@ -701,7 +669,7 @@ ALTER TABLE ONLY public.z_task_history
 
 
 --
--- TOC entry 3252 (class 1259 OID 16567)
+-- TOC entry 3243 (class 1259 OID 16443)
 -- Name: IX_b1_comment__task_id; Type: INDEX; Schema: public; Owner: admin_user
 --
 
@@ -709,8 +677,8 @@ CREATE INDEX "IX_b1_comment__task_id" ON public.b1_comment USING btree (task_id)
 
 
 --
--- TOC entry 3456 (class 0 OID 0)
--- Dependencies: 3252
+-- TOC entry 3454 (class 0 OID 0)
+-- Dependencies: 3243
 -- Name: INDEX "IX_b1_comment__task_id"; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -718,7 +686,7 @@ COMMENT ON INDEX public."IX_b1_comment__task_id" IS 'Optimizes queries filtering
 
 
 --
--- TOC entry 3249 (class 1259 OID 16548)
+-- TOC entry 3252 (class 1259 OID 16444)
 -- Name: IX_z_task_history__task_id; Type: INDEX; Schema: public; Owner: admin_user
 --
 
@@ -726,8 +694,8 @@ CREATE INDEX "IX_z_task_history__task_id" ON public.z_task_history USING btree (
 
 
 --
--- TOC entry 3457 (class 0 OID 0)
--- Dependencies: 3249
+-- TOC entry 3455 (class 0 OID 0)
+-- Dependencies: 3252
 -- Name: INDEX "IX_z_task_history__task_id"; Type: COMMENT; Schema: public; Owner: admin_user
 --
 
@@ -735,7 +703,7 @@ COMMENT ON INDEX public."IX_z_task_history__task_id" IS 'Optimizes queries filte
 
 
 --
--- TOC entry 3255 (class 2606 OID 16515)
+-- TOC entry 3255 (class 2606 OID 16445)
 -- Name: a0_task FK_a0_task_stc_category__task_category__category_name; Type: FK CONSTRAINT; Schema: public; Owner: admin_user
 --
 
@@ -744,7 +712,7 @@ ALTER TABLE ONLY public.a0_task
 
 
 --
--- TOC entry 3256 (class 2606 OID 16520)
+-- TOC entry 3256 (class 2606 OID 16450)
 -- Name: a0_task FK_a0_task_stc_priority__task_priority__priority_level; Type: FK CONSTRAINT; Schema: public; Owner: admin_user
 --
 
@@ -753,7 +721,7 @@ ALTER TABLE ONLY public.a0_task
 
 
 --
--- TOC entry 3257 (class 2606 OID 16525)
+-- TOC entry 3257 (class 2606 OID 16455)
 -- Name: a0_task FK_a0_task_stc_status__task_status__app_status; Type: FK CONSTRAINT; Schema: public; Owner: admin_user
 --
 
@@ -762,7 +730,7 @@ ALTER TABLE ONLY public.a0_task
 
 
 --
--- TOC entry 3259 (class 2606 OID 16562)
+-- TOC entry 3258 (class 2606 OID 16460)
 -- Name: b1_comment FK_b1_comment_a0_task__task_id; Type: FK CONSTRAINT; Schema: public; Owner: admin_user
 --
 
@@ -771,7 +739,7 @@ ALTER TABLE ONLY public.b1_comment
 
 
 --
--- TOC entry 3258 (class 2606 OID 16543)
+-- TOC entry 3259 (class 2606 OID 16465)
 -- Name: z_task_history FK_z_task_history_a0_task__task_id; Type: FK CONSTRAINT; Schema: public; Owner: admin_user
 --
 
@@ -779,7 +747,7 @@ ALTER TABLE ONLY public.z_task_history
     ADD CONSTRAINT "FK_z_task_history_a0_task__task_id" FOREIGN KEY (task_id) REFERENCES public.a0_task(task_id);
 
 
--- Completed on 2025-04-06 13:36:59 UTC
+-- Completed on 2025-05-03 04:26:26 UTC
 
 --
 -- PostgreSQL database dump complete

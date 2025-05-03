@@ -1,20 +1,20 @@
 version: "3.8"
 
 volumes:
-  task_manager_app_postgres_data:
+  postgres_data:
     name: task_manager_app_postgres_data
-  task_manager_app_pgadmin_data:
+  pgadmin_data:
     name: task_manager_app_pgadmin_data
 
 networks:
-  task_manager_app_network:
+  task_manager_network:
     driver: bridge
     name: task_manager_app_network
 
 services:
-  task_manager_app_postgres_image:
-    image: postgres:latest
-    container_name: task_manager_app_postgres_conatiner
+  postgres:
+    image: postgres:latest  # Explicit version instead of 'latest'
+    container_name: task_manager_app_postgres_container
     restart: always
     environment:
       POSTGRES_USER: admin_user
@@ -23,20 +23,16 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - task_manager_app_postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - task_manager_app_network
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "admin_user"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      - task_manager_network
 
-  task_manager_app_pgadmin_image:
-    image: dpage/pgadmin4
+  pgadmin:
+    image: dpage/pgadmin4 # Use an explicit stable version
     container_name: task_manager_app_pgadmin_container
     depends_on:
-      - task_manager_app_postgres_image
+      - postgres
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
@@ -44,6 +40,7 @@ services:
     ports:
       - "5050:80"
     volumes:
-      - task_manager_app_pgadmin_data:/var/lib/pgadmin
+      - pgadmin_data:/var/lib/pgadmin
+      - ./servers.json:/pgadmin4/servers.json:ro  # readonly for config safety
     networks:
-      - task_manager_app_network
+      - task_manager_network
