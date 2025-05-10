@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 
 // Basic Route
 app.get("/", (_: Request, res: Response) => {
-  res.status(200).send("Hello, World! siva naga");
+  res.status(200).send("Hello, World!");
 });
 
 // Start the server
