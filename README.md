@@ -1,2 +1,0 @@
-# backendapps
-all backend apps

@@ -13,7 +13,7 @@ networks:
 
 services:
   postgres:
-    image: postgres:latest  # Explicit version instead of 'latest'
+    image: postgres:latest
     container_name: task_manager_app_postgres_container
     restart: always
     environment:
@@ -41,6 +41,6 @@ services:
       - "5050:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
-      - ./servers.json:/pgadmin4/servers.json:ro  # readonly for config safety
+      - ./servers.json:/pgadmin4/servers.json:ro # readonly for config safety
     networks:
       - task_manager_network
