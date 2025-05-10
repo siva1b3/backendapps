@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run --reporter=verbose",
     "test:ui": "vitest --ui",
     "pretsc": "node config.js",
     "tsc": "npx tsc -w",
