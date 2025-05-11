@@ -1,10 +1,9 @@
 import { Router, Request, Response } from "express";
+import { statusController } from "../controllers/index.controller.js";
 
 const statusRouter = Router();
 
-statusRouter.get("/status", (_: Request, res: Response) => {
-  res.status(200).json({ status: "ok", data: ["item1", "item2"] });
-});
+statusRouter.get("/status", statusController.getStatusList);
 
 statusRouter.get("/status/:id", (req: Request, res: Response) => {
   const { id } = req.params;
