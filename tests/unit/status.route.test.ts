@@ -13,7 +13,11 @@ describe("GET /v1/status", () => {
   it("should return status ok and a data array", async () => {
     const res = await request(app).get("/v1/status");
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ status: "ok", data: ["item1", "item2"] });
+    expect(res.body).toEqual({
+      status: "ok",
+      HH: "NBSAND",
+      data: ["item1", "item2"],
+    });
   });
 });
 
