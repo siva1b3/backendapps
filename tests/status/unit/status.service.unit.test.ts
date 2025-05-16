@@ -1,6 +1,12 @@
 // tests/status.service.test.ts
+
+// Testing utilities and setup
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
+// Module under test
 import { statusService } from "../../../src/service/index.service.js";
+
+// Dependencies used by the module under test
 import prisma from "../../../src/PrismaComponet/Prisma.js";
 import { stc_status } from "../../../generated/client.js";
 

@@ -1,7 +1,13 @@
 // tests/status.controller.test.ts
+
+// Testing utilities and setup
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Request, Response, NextFunction } from "express";
+
+// Module under test
 import { statusController } from "../../../src/controllers/index.controller.js";
+
+// Dependencies used by the module under test
+import { Request, Response, NextFunction } from "express";
 import { statusService } from "../../../src/service/index.service.js";
 import { stc_status } from "../../../generated/client.js";
 
