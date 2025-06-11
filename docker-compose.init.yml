@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  node-app:
+    container_name: node-container
+    image: node:latest
+    command: tail -f /dev/null
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    working_dir: /app
+    networks:
+      - node-network
+
+networks:
+  node-network:
+    name: node-network
+    driver: bridge
