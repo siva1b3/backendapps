@@ -17,6 +17,11 @@
     "skipLibCheck": true,
     "allowUnreachableCode": false
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*.ts", "src/**/*.js"],
+  "exclude": ["./node_modules", "./dist"],
+  "watchOptions": {
+    "watchFile": "fixedPollingInterval", // <- Valid value
+    "watchDirectory": "fixedPollingInterval", // <- Valid value
+    "fallbackPolling": "fixedinterval" // <- Valid value
+  }
 }

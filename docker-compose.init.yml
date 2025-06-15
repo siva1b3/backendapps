@@ -1,5 +1,9 @@
 version: "3.8"
 
+networks:
+  task_manager_app_network:
+    external: true
+
 services:
   node-app:
     container_name: node-container
@@ -11,9 +15,4 @@ services:
       - .:/app
     working_dir: /app
     networks:
-      - node-network
-
-networks:
-  node-network:
-    name: node-network
-    driver: bridge
+      - task_manager_app_network

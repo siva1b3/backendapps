@@ -1,0 +1,18 @@
+version: "3.8"
+
+networks:
+  task_manager_app_network:
+    external: true
+
+services:
+  node-app:
+    container_name: node-container
+    image: node:latest
+    command: sh -c "npm install && npx prisma db pull && npx prisma generate && npm run tsc"
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    working_dir: /app
+    networks:
+      - task_manager_app_network

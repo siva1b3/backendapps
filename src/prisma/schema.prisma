@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model a0_task {
+  task_id          BigInt           @id(map: "PK_a0_task__task_id") @default(autoincrement())
+  task_title       String           @db.VarChar(255)
+  task_description String
+  task_date        DateTime?        @db.Timestamp(6)
+  task_status      String           @db.VarChar(50)
+  task_priority    String           @db.VarChar(50)
+  task_category    String           @db.VarChar(50)
+  created_date     DateTime         @default(now()) @db.Timestamp(6)
+  updated_date     DateTime?        @db.Timestamp(6)
+  stc_category     stc_category     @relation(fields: [task_category], references: [category_name], map: "FK_a0_task_stc_category__task_category__category_name")
+  stc_priority     stc_priority     @relation(fields: [task_priority], references: [app_priority], map: "FK_a0_task_stc_priority__task_priority__priority_level")
+  stc_status       stc_status       @relation(fields: [task_status], references: [app_status], map: "FK_a0_task_stc_status__task_status__app_status")
+  b1_comment       b1_comment[]
+  z_task_history   z_task_history[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model b1_comment {
+  comment_id   BigInt    @id(map: "PK_b1_comment__comment_id") @default(autoincrement())
+  task_id      BigInt
+  comment_text String
+  created_at   DateTime  @default(now()) @db.Timestamp(6)
+  updated_at   DateTime? @db.Timestamp(6)
+  a0_task      a0_task   @relation(fields: [task_id], references: [task_id], onDelete: Cascade, map: "FK_b1_comment_a0_task__task_id")
+
+  @@index([task_id], map: "IX_b1_comment__task_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model stc_category {
+  category_name String    @id(map: "PK_stc_category__category_name") @db.VarChar(50)
+  created_date  DateTime  @default(now()) @db.Timestamp(6)
+  updated_date  DateTime? @db.Timestamp(6)
+  update_reason String?   @db.VarChar
+  a0_task       a0_task[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model stc_priority {
+  app_priority  String    @id(map: "PK_stc_priority__app_priority") @db.VarChar(50)
+  created_date  DateTime  @default(now()) @db.Timestamp(6)
+  updated_date  DateTime? @db.Timestamp(6)
+  update_reason String?   @db.VarChar
+  a0_task       a0_task[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model stc_status {
+  app_status    String    @id(map: "PK_stc_status__app_status") @db.VarChar(50)
+  created_date  DateTime  @default(now()) @db.Timestamp(6)
+  updated_date  DateTime? @db.Timestamp(6)
+  update_reason String?   @db.VarChar
+  a0_task       a0_task[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model z_task_history {
+  history_id       BigInt    @id(map: "PK_z_task_history__history_id") @default(autoincrement())
+  task_id          BigInt
+  task_title       String    @db.VarChar(255)
+  task_description String
+  task_date        DateTime? @db.Timestamp(6)
+  task_status      String    @db.VarChar(50)
+  task_priority    String    @db.VarChar(50)
+  task_category    String    @db.VarChar(50)
+  change_timestamp DateTime  @default(now()) @db.Timestamp(6)
+  operation_type   String    @db.VarChar(10)
+  a0_task          a0_task   @relation(fields: [task_id], references: [task_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_z_task_history_a0_task__task_id")
+
+  @@index([task_id], map: "IX_z_task_history__task_id")
+}
