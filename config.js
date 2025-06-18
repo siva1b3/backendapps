@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
+// Remove and recreate the dist folder to ensure a clean build output.
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -14,9 +15,8 @@ if (fs.existsSync(folderPath)) {
   console.log("Folder does not exist.");
 }
 
-// copy js and .d.ts files
-// from the src folder to the dist folder
-// as compiler not emit them we copy them manually
+// Copy the src/prisma directory to dist/prisma because the TypeScript compiler does not emit non-code assets.
+// This manual copy ensures that all necessary Prisma files are available in the build output.
 fs.mkdirSync(folderPath, { recursive: true });
 console.log("Folder created successfully.");
 
