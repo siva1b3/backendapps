@@ -11,6 +11,7 @@ services:
     command: sh -c "npm install && npx prisma db pull && npx prisma generate && npm run tsc"
     ports:
       - "3000:3000"
+      - "51204:51204"
     volumes:
       - .:/app
     working_dir: /app
