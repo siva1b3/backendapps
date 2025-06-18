@@ -1,12 +1,14 @@
 /// <reference types="vitest/config" />
 
-// Configure Vitest (https://vitest.dev/config/)
-
 import { defineConfig } from "vite";
 
 export default defineConfig({
   test: {
-    /* for example, use global to avoid globals imports (describe, test, expect): */
-    // globals: true,
+    globals: true, // Allows using global test functions without importing (describe, it, expect)
+    include: ["tests/**/*.test.ts"], // Test file pattern
+    coverage: {
+      reporter: ["text", "html"], // Code coverage reports
+      all: true,
+    },
   },
 });

@@ -8,7 +8,7 @@
     "tsc": "npx tsc -w",
     "start": "node dist/server.js",
     "test": "vitest",
-    "test:ui": "vitest --ui --open=false --ui-host=0.0.0.0",
+    "test:ui": "vitest --ui --open=false --host=0.0.0.0",
     "test:run": "vitest run"
   },
   "repository": {
