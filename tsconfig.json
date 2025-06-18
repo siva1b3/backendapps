@@ -17,7 +17,7 @@
     "skipLibCheck": true,
     "allowUnreachableCode": false
   },
-  "include": ["src/**/*.ts", "src/**/*.js"],
+  "include": ["src/**/*.ts", "src/**/*.js", "tests/**/*.ts", "tests/**/*.js"],
   "exclude": ["./node_modules", "./dist"],
   "watchOptions": {
     "watchFile": "fixedPollingInterval", // <- Valid value

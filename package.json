@@ -24,13 +24,19 @@
   "dependencies": {
     "@prisma/client": "^6.9.0",
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.0",
     "prisma": "^6.9.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "@vitest/ui": "latest",
+    "vite": "latest",
+    "vitest": "latest"
   }
 }
