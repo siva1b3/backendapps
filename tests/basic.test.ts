@@ -14,6 +14,11 @@ test("Squared", () => {
   expect(squared(12)).toBe(144);
 });
 
+test("failed_tests", () => {
+  expect(squared(2)).toBe(40);
+  expect(squared(12)).toBe(1440);
+});
+
 test("JSON", () => {
   const input = {
     foo: "hello",

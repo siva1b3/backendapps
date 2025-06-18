@@ -8,4 +8,8 @@ describe("suite name", () => {
   it("bar", () => {
     expect(1 + 1).eq(2);
   });
+
+  it("bar2", () => {
+    expect(1 + 1).eq(2);
+  });
 });

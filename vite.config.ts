@@ -4,11 +4,10 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   test: {
-    globals: true, // Allows using global test functions without importing (describe, it, expect)
-    include: ["tests/**/*.test.ts"], // Test file pattern
-    coverage: {
-      reporter: ["text", "html"], // Code coverage reports
-      all: true,
-    },
+    ui: true,
+  },
+  server: {
+    host: "0.0.0.0", // <- This is the key part
+    port: 51204, // Optional: ensure fixed port if needed
   },
 });
