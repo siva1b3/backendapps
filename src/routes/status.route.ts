@@ -1,10 +1,9 @@
 import { Router, Request, Response } from "express";
+import { statusController } from "../controllers/controller.ts";
 
 const statusRouter = Router();
 
-statusRouter.get("/statusList", (_: Request, res: Response) => {
-  res.status(200).send("GET all statuses");
-});
+statusRouter.get("/statusList", statusController.getStstusListController);
 
 statusRouter.post("/status", (_: Request, res: Response) => {
   res.status(200).send("POST new status");
