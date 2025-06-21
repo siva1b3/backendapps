@@ -20,6 +20,9 @@ const createStatusController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    if (req.body === undefined) {
+      throw customError("Request body is required", 400);
+    }
     const newStatus = await statusService.createStatusService(req.body);
     res.status(201).json(newStatus);
   } catch (error) {
