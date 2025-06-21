@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { statusService } from "../services/services.ts";
 import { customError } from "../errors/errors.ts";
+import { get } from "http";
 
 const getStstusListController = async (
   _: Request,
@@ -9,6 +10,29 @@ const getStstusListController = async (
 ): Promise<void> => {
   try {
     res.status(200).json(await statusService.getStatusListService());
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getStatusByapp_statusController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { app_status } = req.params;
+
+    if (!app_status) {
+      throw customError("app_status parameter is required", 400);
+    }
+
+    if (typeof app_status !== "string") {
+      throw customError("app_status must be a string", 400);
+    }
+
+    const status = await statusService.getStatusByapp_statusService(app_status);
+    res.status(200).json(status);
   } catch (error) {
     next(error);
   }
@@ -30,9 +54,37 @@ const createStatusController = async (
   }
 };
 
+const updateStatusByapp_statusController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { app_status } = req.params;
+    if (!app_status) {
+      throw customError("app_status parameter is required", 400);
+    }
+    if (typeof app_status !== "string") {
+      throw customError("app_status must be a string", 400);
+    }
+    if (req.body === undefined) {
+      throw customError("Request body is required", 400);
+    }
+    const updatedStatus = await statusService.updateStatusByapp_statusService(
+      req.body,
+      app_status
+    );
+    res.status(200).json(updatedStatus);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const statusController = {
   getStstusListController,
+  getStatusByapp_statusController,
   createStatusController,
+  updateStatusByapp_statusController,
 };
 
 export default statusController;

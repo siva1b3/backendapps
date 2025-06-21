@@ -6,6 +6,14 @@ import { customError } from "../../src/errors/errors";
 
 vi.mock("../../src/services/services");
 
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
+afterEach(() => {
+  vi.resetAllMocks();
+});
+
 describe("getStstusListController", () => {
   let req: Request;
   let res: Response;
@@ -116,5 +124,104 @@ describe("createStatusController", () => {
     expect(statusService.createStatusService).not.toHaveBeenCalled();
     expect(res.status).not.toHaveBeenCalled();
     expect(res.json).not.toHaveBeenCalled();
+  });
+});
+
+describe("updateStatusByapp_statusController", () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let next: NextFunction;
+
+  beforeEach(() => {
+    req = {};
+    res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    };
+    next = vi.fn();
+  });
+
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
+
+  it("should successfully update and return status (Positive case)", async () => {
+    const mockBody = { id: 1, status: "approved" };
+    const mockResult = { success: true };
+    req.body = mockBody;
+
+    (statusService.updateStatusByapp_statusService as any).mockResolvedValue(
+      mockResult
+    );
+
+    await statusController.updateStatusByapp_statusController(
+      req as Request,
+      res as Response,
+      next
+    );
+
+    expect(statusService.updateStatusByapp_statusService).toHaveBeenCalledWith(
+      mockBody
+    );
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(mockResult);
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it("should handle missing request body (Negative case 1)", async () => {
+    req.body = undefined;
+
+    await statusController.updateStatusByapp_statusController(
+      req as Request,
+      res as Response,
+      next
+    );
+
+    expect(
+      statusService.updateStatusByapp_statusService
+    ).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: "Request body is required",
+        statusCode: 400,
+      })
+    );
+  });
+
+  it("should handle service error properly (Negative case 2)", async () => {
+    req.body = { id: 2, status: "rejected" };
+    const serviceError = customError("Service failure", 500);
+
+    (statusService.updateStatusByapp_statusService as any).mockRejectedValue(
+      serviceError
+    );
+
+    await statusController.updateStatusByapp_statusController(
+      req as Request,
+      res as Response,
+      next
+    );
+
+    expect(statusService.updateStatusByapp_statusService).toHaveBeenCalledWith(
+      req.body
+    );
+    expect(next).toHaveBeenCalledWith(serviceError);
+  });
+
+  it("should handle unexpected errors (Negative case 3)", async () => {
+    req.body = { id: 3, status: "pending" };
+    const randomError = new Error("Unexpected failure");
+
+    (statusService.updateStatusByapp_statusService as any).mockRejectedValue(
+      randomError
+    );
+
+    await statusController.updateStatusByapp_statusController(
+      req as Request,
+      res as Response,
+      next
+    );
+
+    expect(next).toHaveBeenCalledWith(randomError);
   });
 });
