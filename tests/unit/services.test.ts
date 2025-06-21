@@ -2,7 +2,13 @@ import { describe, it, expect, vi } from "vitest";
 import { statusService } from "../../src/services/services";
 import prisma from "../../src/prismaClient/Prisma";
 
-vi.mock("../prismaClient/Prisma");
+vi.mock("../../src/prismaClient/Prisma", () => ({
+  default: {
+    stc_status: {
+      findMany: vi.fn(),
+    },
+  },
+}));
 
 describe("getStatusListService", () => {
   it("should return statuses from database", async () => {
