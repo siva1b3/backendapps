@@ -5,13 +5,14 @@ const getStstusListController = async (
   _: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     res.status(200).json(await statusService.getStatusListService());
   } catch (error) {
     next(error);
   }
 };
+
 const statusController = {
   getStstusListController,
 };
