@@ -5,9 +5,7 @@ const statusRouter = Router();
 
 statusRouter.get("/statusList", statusController.getStstusListController);
 
-statusRouter.post("/status", (_: Request, res: Response) => {
-  res.status(200).send("POST new status");
-});
+statusRouter.post("/status", statusController.createStatusController);
 
 statusRouter
   .route("/status/:id")

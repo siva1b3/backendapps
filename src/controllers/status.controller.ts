@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { statusService } from "../services/services.ts";
+import { customError } from "../errors/errors.ts";
 
 const getStstusListController = async (
   _: Request,
@@ -13,8 +14,22 @@ const getStstusListController = async (
   }
 };
 
+const createStatusController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const newStatus = await statusService.createStatusService(req.body);
+    res.status(201).json(newStatus);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const statusController = {
   getStstusListController,
+  createStatusController,
 };
 
 export default statusController;

@@ -16,8 +16,32 @@ const getStatusListService = async (): Promise<stc_status[]> => {
   }
 };
 
+const createStatusService = async (data: stc_status) => {
+  try {
+    const existingStatus = await prisma.stc_status.findUnique({
+      where: {
+        app_status: data.app_status,
+      },
+    });
+
+    if (existingStatus) {
+      throw customError("Status already exists", 400);
+    }
+
+    const newStatus = await prisma.stc_status.create({
+      data,
+    });
+    return newStatus;
+  } catch (error: any) {
+    throw error.statusCode
+      ? error
+      : customError("Failed to create status", 500);
+  }
+};
+
 const statusService = {
   getStatusListService,
+  createStatusService,
 };
 
 export default statusService;
