@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "001 Basic CURD Postgres",
+      "Group": "Servers",
+      "Host": "001_basic_curd_postgres_service",
+      "Port": 5432,
+      "MaintenanceDB": "001_basic_curd_db",
+      "Username": "admin",
+      "SSLMode": "prefer"
+    }
+  }
+}

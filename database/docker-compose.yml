@@ -1,0 +1,47 @@
+version: "3.9"
+
+networks:
+  001_basic_curd_postgres_network:
+    driver: bridge
+    name: 001_basic_curd_postgres_network
+
+volumes:
+  001_basic_curd_postgres_data:
+    name: 001_basic_curd_postgres_data
+  001_basic_curd_pgadmin_data:
+    name: 001_basic_curd_pgadmin_data
+
+services:
+  001_basic_curd_postgres_service:
+    image: postgres:latest
+    container_name: 001_basic_curd_postgres_container
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: 001_basic_curd_db
+      TZ: Asia/Kolkata
+    volumes:
+      - 001_basic_curd_postgres_data:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d   # 👈 mount SQL init scripts
+    networks:
+      - 001_basic_curd_postgres_network
+
+  001_basic_curd_pgadmin_service:
+    image: dpage/pgadmin4:latest
+    container_name: 001_basic_curd_pgadmin_container
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_SERVER_JSON_FILE: /pgadmin_config/servers.json   # 👈 tell pgAdmin where file is
+    volumes:
+      - 001_basic_curd_pgadmin_data:/var/lib/pgadmin
+      - ./servers.json:/pgadmin_config/servers.json:ro
+    ports:
+      - "8080:80"
+    networks:
+      - 001_basic_curd_postgres_network
+    depends_on:
+      - 001_basic_curd_postgres_service
+
