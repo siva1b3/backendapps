@@ -1,0 +1,424 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["main_app", "public", "static_data"]
+}
+
+model attachments {
+  attachment_id       BigInt           @id(map: "PK_attachments__attachment_id") @default(autoincrement())
+  task_id             BigInt?
+  project_id          BigInt?
+  uploaded_by_user_id BigInt
+  file_url            String
+  file_type           String           @db.VarChar(50)
+  uploaded_time       DateTime?        @default(now()) @db.Timestamp(6)
+  description         String?
+  is_active           Boolean          @default(true)
+  attachment_types    attachment_types @relation(fields: [file_type], references: [file_type], onDelete: NoAction, onUpdate: NoAction, map: "FK_attachments__file_type")
+  projects            projects?        @relation(fields: [project_id], references: [project_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_attachments__project_id")
+  tasks               tasks?           @relation(fields: [task_id], references: [task_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_attachments__task_id")
+  users               users            @relation(fields: [uploaded_by_user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_attachments__uploaded_by_user_id")
+
+  @@schema("main_app")
+}
+
+model login_sessions {
+  login_session_id   BigInt          @id(map: "PK_login_sessions__login_session_id") @default(autoincrement())
+  user_id            BigInt
+  token              String          @unique(map: "UK_login_sessions__token")
+  ip_address         String?         @db.VarChar(45)
+  is_active          Boolean         @default(true)
+  logout_reason      String?         @db.VarChar(255)
+  session_start_time DateTime        @default(now()) @db.Timestamp(6)
+  session_end_time   DateTime        @db.Timestamp(6)
+  logout_reasons     logout_reasons? @relation(fields: [logout_reason], references: [logout_reason], onDelete: NoAction, onUpdate: NoAction, map: "FK_login_sessions__logout_reason")
+  users              users           @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_login_sessions__user_id")
+
+  @@schema("main_app")
+}
+
+model project_members {
+  project_member_id                             BigInt               @id(map: "PK_project_members__project_member_id") @default(autoincrement())
+  project_id                                    BigInt
+  user_id                                       BigInt
+  added_by_user_id                              BigInt
+  user_added_date                               DateTime?            @db.Date
+  user_removed_date                             DateTime?            @db.Date
+  user_role_in_project                          String               @db.VarChar(50)
+  invitation_status                             String               @db.VarChar(50)
+  is_active_in_project                          Boolean              @default(true)
+  created_time                                  DateTime             @default(now()) @db.Timestamp(6)
+  modified_time                                 DateTime?            @db.Timestamp(6)
+  modified_reason                               String?
+  users_project_members_added_by_user_idTousers users                @relation("project_members_added_by_user_idTousers", fields: [added_by_user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_project_members__added_by_user_id")
+  invitation_statuses                           invitation_statuses  @relation(fields: [invitation_status], references: [invitation_status], onDelete: NoAction, onUpdate: NoAction, map: "FK_project_members__invitation_status")
+  projects                                      projects             @relation(fields: [project_id], references: [project_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_project_members__project_id")
+  users_project_members_user_idTousers          users                @relation("project_members_user_idTousers", fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_project_members__user_id")
+  project_member_roles                          project_member_roles @relation(fields: [user_role_in_project], references: [project_member_role], onDelete: NoAction, onUpdate: NoAction, map: "FK_project_members__user_role_in_project")
+
+  @@unique([project_id, user_id], map: "UK_project_members__project_id_user_id")
+  @@schema("main_app")
+}
+
+model project_notifications {
+  notification_id         BigInt                  @id(map: "PK_project_notifications__notification_id") @default(autoincrement())
+  project_id              BigInt
+  broadcast_user_id       BigInt
+  notification_event      String                  @db.VarChar(255)
+  notification_platform   String                  @db.VarChar(50)
+  notification_message    String
+  notification_time       DateTime                @default(now()) @db.Timestamp(6)
+  notification_priority   String                  @db.VarChar(50)
+  created_time            DateTime                @default(now()) @db.Timestamp(6)
+  modified_time           DateTime?               @db.Timestamp(6)
+  modified_reason         String?
+  users                   users                   @relation(fields: [broadcast_user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_project_notifications__broadcast_user_id")
+  notification_events     notification_events     @relation(fields: [notification_event], references: [notification_event], onDelete: NoAction, onUpdate: NoAction, map: "FK_project_notifications__notification_event")
+  notification_platforms  notification_platforms  @relation(fields: [notification_platform], references: [notification_platform], onDelete: NoAction, onUpdate: NoAction, map: "FK_project_notifications__notification_platform")
+  notification_priorities notification_priorities @relation(fields: [notification_priority], references: [notification_priority], onDelete: NoAction, onUpdate: NoAction, map: "FK_project_notifications__notification_priority")
+  projects                projects                @relation(fields: [project_id], references: [project_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_project_notifications__project_id")
+
+  @@schema("main_app")
+}
+
+model projects {
+  project_id              BigInt                  @id(map: "PK_projects__project_id") @default(autoincrement())
+  owner_id                BigInt
+  project_name            String                  @db.VarChar(255)
+  project_description     String?
+  project_status          String                  @db.VarChar(50)
+  project_creation_date   DateTime                @db.Date
+  project_start_date      DateTime?               @db.Date
+  project_end_date        DateTime?               @db.Date
+  template_type           String                  @db.VarChar(50)
+  project_priority_level  String                  @db.VarChar(50)
+  project_visibility      String                  @db.VarChar(50)
+  project_category        String                  @db.VarChar(50)
+  budget                  Decimal?                @db.Decimal(15, 2)
+  is_active               Boolean                 @default(true)
+  created_time            DateTime                @default(now()) @db.Timestamp(6)
+  modified_time           DateTime?               @db.Timestamp(6)
+  modified_reason         String?
+  attachments             attachments[]
+  project_members         project_members[]
+  project_notifications   project_notifications[]
+  users                   users                   @relation(fields: [owner_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_projects__owner_id")
+  project_categories      project_categories      @relation(fields: [project_category], references: [project_category], onDelete: NoAction, onUpdate: NoAction, map: "FK_projects__project_category")
+  project_priority_levels project_priority_levels @relation(fields: [project_priority_level], references: [project_priority_level], onDelete: NoAction, onUpdate: NoAction, map: "FK_projects__project_priority_level")
+  project_statuses        project_statuses        @relation(fields: [project_status], references: [project_status], onDelete: NoAction, onUpdate: NoAction, map: "FK_projects__project_status")
+  project_visibilities    project_visibilities    @relation(fields: [project_visibility], references: [project_visibility], onDelete: NoAction, onUpdate: NoAction, map: "FK_projects__project_visibility")
+  template_types          template_types          @relation(fields: [template_type], references: [template_type], onDelete: NoAction, onUpdate: NoAction, map: "FK_projects__template_type")
+  tasks                   tasks[]
+
+  @@schema("main_app")
+}
+
+model task_assignees {
+  task_assignee_id                                BigInt    @id(map: "PK_task_assignees__task_assignee_id") @default(autoincrement())
+  task_id                                         BigInt
+  user_id                                         BigInt
+  assigned_by_user_id                             BigInt
+  assignment_date                                 DateTime  @db.Date
+  unassignment_date                               DateTime? @db.Date
+  is_active                                       Boolean   @default(true)
+  created_time                                    DateTime  @default(now()) @db.Timestamp(6)
+  modified_time                                   DateTime? @db.Timestamp(6)
+  modified_reason                                 String?
+  users_task_assignees_assigned_by_user_idTousers users     @relation("task_assignees_assigned_by_user_idTousers", fields: [assigned_by_user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_task_assignees__assigned_by_user_id")
+  tasks                                           tasks     @relation(fields: [task_id], references: [task_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_task_assignees__task_id")
+  users_task_assignees_user_idTousers             users     @relation("task_assignees_user_idTousers", fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_task_assignees__user_id")
+
+  @@unique([task_id, user_id], map: "UK_task_assignees__task_id_user_id")
+  @@schema("main_app")
+}
+
+model task_comments {
+  comment_id            BigInt    @id(map: "PK_task_comments__comment_id") @default(autoincrement())
+  task_id               BigInt
+  user_id               BigInt
+  comment_text          String
+  comment_creation_time DateTime  @default(now()) @db.Timestamp(6)
+  is_edited             Boolean   @default(false)
+  comment_edited_time   DateTime? @db.Timestamp(6)
+  created_time          DateTime  @default(now()) @db.Timestamp(6)
+  modified_time         DateTime? @db.Timestamp(6)
+  modified_reason       String?
+  tasks                 tasks     @relation(fields: [task_id], references: [task_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_task_comments__task_id")
+  users                 users     @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_task_comments__user_id")
+
+  @@schema("main_app")
+}
+
+model tasks {
+  task_id              BigInt               @id(map: "PK_tasks__task_id") @default(autoincrement())
+  project_id           BigInt
+  task_name            String               @db.VarChar(255)
+  task_description     String?
+  task_type            String               @db.VarChar(50)
+  task_status          String               @db.VarChar(50)
+  task_priority_level  String               @db.VarChar(50)
+  task_creation_date   DateTime             @db.Date
+  task_start_date      DateTime?            @db.Date
+  task_completion_date DateTime?            @db.Date
+  estimated_hours      Decimal?             @db.Decimal(10, 2)
+  dependencies         String?
+  recurrence_pattern   String?              @db.VarChar(255)
+  parent_task_id       BigInt?
+  is_active            Boolean              @default(true)
+  created_time         DateTime             @default(now()) @db.Timestamp(6)
+  modified_time        DateTime?            @db.Timestamp(6)
+  modified_reason      String?
+  attachments          attachments[]
+  task_assignees       task_assignees[]
+  task_comments        task_comments[]
+  tasks                tasks?               @relation("tasksTotasks", fields: [parent_task_id], references: [task_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_tasks__parent_task_id")
+  other_tasks          tasks[]              @relation("tasksTotasks")
+  projects             projects             @relation(fields: [project_id], references: [project_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_tasks__project_id")
+  task_priority_levels task_priority_levels @relation(fields: [task_priority_level], references: [task_priority_level], onDelete: NoAction, onUpdate: NoAction, map: "FK_tasks__task_priority_level")
+  task_statuses        task_statuses        @relation(fields: [task_status], references: [task_status], onDelete: NoAction, onUpdate: NoAction, map: "FK_tasks__task_status")
+  task_types           task_types           @relation(fields: [task_type], references: [task_type], onDelete: NoAction, onUpdate: NoAction, map: "FK_tasks__task_type")
+
+  @@schema("main_app")
+}
+
+model users {
+  user_id                                                  BigInt                  @id(map: "PK_users__user_id") @default(autoincrement())
+  user_name                                                String                  @db.VarChar(255)
+  user_email                                               String                  @unique(map: "UK_users__user_email") @db.VarChar(255)
+  password_hash                                            String
+  user_role                                                String                  @db.VarChar(50)
+  user_status                                              String                  @db.VarChar(50)
+  user_start_date                                          DateTime                @db.Date
+  user_end_date                                            DateTime?               @db.Date
+  failed_login_attempts                                    Int                     @default(0)
+  profile_picture_url                                      String?
+  phone_number                                             String?                 @db.VarChar(20)
+  created_by_id                                            BigInt?
+  is_active                                                Boolean                 @default(true)
+  created_time                                             DateTime                @default(now()) @db.Timestamp(6)
+  modified_time                                            DateTime?               @db.Timestamp(6)
+  modified_reason                                          String?
+  attachments                                              attachments[]
+  login_sessions                                           login_sessions[]
+  project_members_project_members_added_by_user_idTousers  project_members[]       @relation("project_members_added_by_user_idTousers")
+  project_members_project_members_user_idTousers           project_members[]       @relation("project_members_user_idTousers")
+  project_notifications                                    project_notifications[]
+  projects                                                 projects[]
+  task_assignees_task_assignees_assigned_by_user_idTousers task_assignees[]        @relation("task_assignees_assigned_by_user_idTousers")
+  task_assignees_task_assignees_user_idTousers             task_assignees[]        @relation("task_assignees_user_idTousers")
+  task_comments                                            task_comments[]
+  users                                                    users?                  @relation("usersTousers", fields: [created_by_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_users__created_by_id")
+  other_users                                              users[]                 @relation("usersTousers")
+  user_roles                                               user_roles              @relation(fields: [user_role], references: [role_name], onDelete: NoAction, onUpdate: NoAction, map: "FK_users__user_role")
+  user_statuses                                            user_statuses           @relation(fields: [user_status], references: [user_status], onDelete: NoAction, onUpdate: NoAction, map: "FK_users__user_status")
+
+  @@schema("main_app")
+}
+
+model attachment_types {
+  file_type             String        @id(map: "PK_attachment_types__file_type") @db.VarChar(50)
+  file_type_description String?
+  is_active             Boolean       @default(true)
+  created_time          DateTime      @default(now()) @db.Timestamp(6)
+  modified_time         DateTime?     @db.Timestamp(6)
+  modified_reason       String?
+  attachments           attachments[]
+
+  @@schema("static_data")
+}
+
+model invitation_statuses {
+  invitation_status             String            @id(map: "PK_invitation_statuses__invitation_status") @db.VarChar(50)
+  invitation_status_description String?
+  is_active                     Boolean           @default(true)
+  created_time                  DateTime          @default(now()) @db.Timestamp(6)
+  modified_time                 DateTime?         @db.Timestamp(6)
+  modified_reason               String?
+  project_members               project_members[]
+
+  @@schema("static_data")
+}
+
+model logout_reasons {
+  logout_reason             String           @id(map: "PK_logout_reasons__logout_reason") @db.VarChar(255)
+  logout_reason_description String?
+  is_active                 Boolean          @default(true)
+  created_time              DateTime         @default(now()) @db.Timestamp(6)
+  modified_time             DateTime?        @db.Timestamp(6)
+  modified_reason           String?
+  login_sessions            login_sessions[]
+
+  @@schema("static_data")
+}
+
+model notification_events {
+  notification_event             String                  @id(map: "PK_notification_events__notification_event") @db.VarChar(255)
+  notification_event_description String?
+  is_active                      Boolean                 @default(true)
+  created_time                   DateTime                @default(now()) @db.Timestamp(6)
+  modified_time                  DateTime?               @db.Timestamp(6)
+  modified_reason                String?
+  project_notifications          project_notifications[]
+
+  @@schema("static_data")
+}
+
+model notification_platforms {
+  notification_platform             String                  @id(map: "PK_notification_platforms__notification_platform") @db.VarChar(50)
+  notification_platform_description String?
+  is_active                         Boolean                 @default(true)
+  created_time                      DateTime                @default(now()) @db.Timestamp(6)
+  modified_time                     DateTime?               @db.Timestamp(6)
+  modified_reason                   String?
+  project_notifications             project_notifications[]
+
+  @@schema("static_data")
+}
+
+model notification_priorities {
+  notification_priority             String                  @id(map: "PK_notification_priorities__notification_priority") @db.VarChar(50)
+  notification_priority_description String?
+  is_active                         Boolean                 @default(true)
+  created_time                      DateTime                @default(now()) @db.Timestamp(6)
+  modified_time                     DateTime?               @db.Timestamp(6)
+  modified_reason                   String?
+  project_notifications             project_notifications[]
+
+  @@schema("static_data")
+}
+
+model project_categories {
+  project_category             String     @id(map: "PK_project_categories__project_category") @db.VarChar(50)
+  project_category_description String?
+  is_active                    Boolean    @default(true)
+  created_time                 DateTime   @default(now()) @db.Timestamp(6)
+  modified_time                DateTime?  @db.Timestamp(6)
+  modified_reason              String?
+  projects                     projects[]
+
+  @@schema("static_data")
+}
+
+model project_member_roles {
+  project_member_role             String            @id(map: "PK_project_member_roles__project_member_role") @db.VarChar(50)
+  project_member_role_description String?
+  is_active                       Boolean           @default(true)
+  created_time                    DateTime          @default(now()) @db.Timestamp(6)
+  modified_time                   DateTime?         @db.Timestamp(6)
+  modified_reason                 String?
+  project_members                 project_members[]
+
+  @@schema("static_data")
+}
+
+model project_priority_levels {
+  project_priority_level             String     @id(map: "PK_project_priority_levels__project_priority_level") @db.VarChar(50)
+  project_priority_level_description String?
+  is_active                          Boolean    @default(true)
+  created_time                       DateTime   @default(now()) @db.Timestamp(6)
+  modified_time                      DateTime?  @db.Timestamp(6)
+  modified_reason                    String?
+  projects                           projects[]
+
+  @@schema("static_data")
+}
+
+model project_statuses {
+  project_status             String     @id(map: "PK_project_statuses__project_status") @db.VarChar(50)
+  project_status_description String?
+  is_active                  Boolean    @default(true)
+  created_time               DateTime   @default(now()) @db.Timestamp(6)
+  modified_time              DateTime?  @db.Timestamp(6)
+  modified_reason            String?
+  projects                   projects[]
+
+  @@schema("static_data")
+}
+
+model project_visibilities {
+  project_visibility             String     @id(map: "PK_project_visibilities__project_visibility") @db.VarChar(50)
+  project_visibility_description String?
+  is_active                      Boolean    @default(true)
+  created_time                   DateTime   @default(now()) @db.Timestamp(6)
+  modified_time                  DateTime?  @db.Timestamp(6)
+  modified_reason                String?
+  projects                       projects[]
+
+  @@schema("static_data")
+}
+
+model task_priority_levels {
+  task_priority_level             String    @id(map: "PK_task_priority_levels__task_priority_level") @db.VarChar(50)
+  task_priority_level_description String?
+  is_active                       Boolean   @default(true)
+  created_time                    DateTime  @default(now()) @db.Timestamp(6)
+  modified_time                   DateTime? @db.Timestamp(6)
+  modified_reason                 String?
+  tasks                           tasks[]
+
+  @@schema("static_data")
+}
+
+model task_statuses {
+  task_status             String    @id(map: "PK_task_statuses__task_status") @db.VarChar(50)
+  task_status_description String?
+  is_active               Boolean   @default(true)
+  created_time            DateTime  @default(now()) @db.Timestamp(6)
+  modified_time           DateTime? @db.Timestamp(6)
+  modified_reason         String?
+  tasks                   tasks[]
+
+  @@schema("static_data")
+}
+
+model task_types {
+  task_type             String    @id(map: "PK_task_types__task_type") @db.VarChar(50)
+  task_type_description String?
+  is_active             Boolean   @default(true)
+  created_time          DateTime  @default(now()) @db.Timestamp(6)
+  modified_time         DateTime? @db.Timestamp(6)
+  modified_reason       String?
+  tasks                 tasks[]
+
+  @@schema("static_data")
+}
+
+model template_types {
+  template_type             String     @id(map: "PK_template_types__template_type") @db.VarChar(50)
+  template_type_description String?
+  is_active                 Boolean    @default(true)
+  created_time              DateTime   @default(now()) @db.Timestamp(6)
+  modified_time             DateTime?  @db.Timestamp(6)
+  modified_reason           String?
+  projects                  projects[]
+
+  @@schema("static_data")
+}
+
+model user_roles {
+  role_name        String    @id(map: "PK_user_roles__role_name") @db.VarChar(50)
+  role_description String?
+  is_active        Boolean   @default(true)
+  created_time     DateTime  @default(now()) @db.Timestamp(6)
+  modified_time    DateTime? @db.Timestamp(6)
+  modified_reason  String?
+  users            users[]
+
+  @@schema("static_data")
+}
+
+model user_statuses {
+  user_status             String    @id(map: "PK_user_statuses__user_status") @db.VarChar(50)
+  user_status_description String?
+  is_active               Boolean   @default(true)
+  created_time            DateTime  @default(now()) @db.Timestamp(6)
+  modified_time           DateTime? @db.Timestamp(6)
+  modified_reason         String?
+  users                   users[]
+
+  @@schema("static_data")
+}
