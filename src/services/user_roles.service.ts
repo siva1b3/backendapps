@@ -1,5 +1,5 @@
 // db/client.ts
-import prisma from "../prisma/prisma.js"
+import prisma from "../prisma/prisma.js";
 
 // Fetch all active roles
 async function getUserRoles() {
@@ -45,7 +45,10 @@ async function updateUserRole(oldRoleName: string, newRoleName: string) {
       data: { role_name: newRoleName },
     });
   } catch (error) {
-    console.error(`Error updating role from "${oldRoleName}" to "${newRoleName}":`, error);
+    console.error(
+      `Error updating role from "${oldRoleName}" to "${newRoleName}":`,
+      error
+    );
     throw error;
   }
 }
