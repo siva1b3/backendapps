@@ -4,7 +4,11 @@
   "description": "all backend apps",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run --reporter=verbose",
+    "test:ui": "vitest --ui",
+    "pretsc": "node config.js",
+    "tsc": "npx tsc -w",
+    "dev": "node dist/server.js"
   },
   "repository": {
     "type": "git",
@@ -13,7 +17,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/siva1b3/backendapps/issues"
   },
