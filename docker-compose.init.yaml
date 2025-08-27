@@ -1,9 +1,8 @@
 version: "3.9"
 
 networks:
-  001_basic_curd_node_network:
-    driver: bridge
-    name: 001_basic_curd_node_network
+  001_basic_curd_global_network:
+    external: true
 
 services:
   001_basic_curd_node_app_service:
@@ -14,4 +13,4 @@ services:
       - ./:/app        # bind mount local code
     command: tail -f /dev/null   # keep container running (replace with npm start if needed)
     networks:
-      - 001_basic_curd_node_network
+      - 001_basic_curd_global_network
