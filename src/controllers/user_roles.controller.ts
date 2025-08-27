@@ -5,7 +5,7 @@ import { userRolesService } from "../services/index.service.js";
 async function getUserRoles(_: Request, res: Response) {
   try {
     const roles = await userRolesService.getUserRoles();
-    res.status(200).json(roles);
+    res.status(200).json({ success: true, data: roles });
   } catch (error) {
     res.status(500).json({ success: false, message: "Failed to fetch roles" });
   }
@@ -14,14 +14,22 @@ async function getUserRoles(_: Request, res: Response) {
 // ✅ Fetch single role by name
 async function getOneUserRole(req: Request, res: Response) {
   const { roleName } = req.params;
+  if (!roleName) {
+    return res
+      .status(400)
+      .json({ success: false, message: "roleName is required" });
+  }
+
   try {
     const role = await userRolesService.getOneUserRole(roleName);
+
     if (!role) {
       return res
         .status(404)
         .json({ success: false, message: "Role not found" });
     }
-    res.status(201).json(role);
+
+    res.status(200).json({ success: true, data: role });
   } catch (error) {
     res.status(500).json({ success: false, message: "Failed to fetch role" });
   }
