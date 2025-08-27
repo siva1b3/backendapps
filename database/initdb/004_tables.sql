@@ -1,11 +1,6 @@
 -- Set the default schema search path to 'basic_curd'
 SET search_path TO main_app;
 
-
-----------------------------------------------------------------------------------------------------
--- Main Application Tables (within 'main_app' schema)
-----------------------------------------------------------------------------------------------------
-
 CREATE TABLE users (
     user_id BIGSERIAL NOT NULL,
     user_name VARCHAR(255) NOT NULL,
@@ -29,7 +24,91 @@ CREATE TABLE users (
     CONSTRAINT "FK_users__user_status" FOREIGN KEY (user_status) REFERENCES static_data.user_statuses (user_status),
     CONSTRAINT "FK_users__created_by_id" FOREIGN KEY (created_by_id) REFERENCES users (user_id)
 );
+
 ALTER TABLE users OWNER TO admin;
+
+-- Step 1: Insert the first user, leaving the created_by_id empty (it will be NULL).
+-- We do not include the created_by_id column in the column list,
+-- allowing the database to insert its default value, which is NULL.
+INSERT INTO users (
+    user_name,
+    user_email,
+    password_hash,
+    user_role,
+    user_status,
+    user_start_date,
+    profile_picture_url,
+    phone_number
+) VALUES (
+    'user01',
+    'user01@example.com',
+    'user', -- A sample SHA1 hash
+    'Admin',
+    'Active',
+    '2025-08-27',
+    'https://example.com/profiles/alice.jpg',
+    '555-123-4567'
+);
+
+-- Step 2: Update the created_by_id for the first user.
+-- This query assumes the user_id for 'user01@example.com' is 1, as it is the first BIGSERIAL value.
+-- We are effectively making the user a self-creator in this context.
+UPDATE users
+SET
+    created_by_id = (SELECT user_id FROM users WHERE user_email = 'user01@example.com'),
+    modified_time = NOW(),
+    modified_reason = 'Set created_by_id after initial creation'
+WHERE user_email = 'user01@example.com';
+
+-- Step 3: Alter the table to make the created_by_id column NOT NULL.
+-- This operation is now safe because the previous UPDATE query ensured
+-- there are no NULL values in the created_by_id column.
+ALTER TABLE users
+ALTER COLUMN created_by_id SET NOT NULL;
+
+-- Step 4: Insert two more rows.
+-- Now that created_by_id is NOT NULL, we must provide a value for it.
+-- We will set the created_by_id for these new users to the user_id of 'user01'.
+INSERT INTO users (
+    user_name,
+    user_email,
+    password_hash,
+    user_role,
+    user_status,
+    user_start_date,
+    created_by_id,
+    failed_login_attempts,
+    profile_picture_url,
+    phone_number,
+    is_active
+) VALUES
+    (
+        'user02',
+        'user02@example.com',
+        'c4a17937e29683700021c33f202283a005080c10', -- A sample SHA1 hash
+        'Admin',
+        'Active',
+        '2025-08-27',
+        (SELECT user_id FROM users WHERE user_email = 'user01@example.com'),
+        0,
+        'https://example.com/profiles/bob.jpg',
+        '555-987-6543',
+        true
+    ),
+    (
+        'user03',
+        'user03@example.com',
+        'b2a3a5e840a1b8966b96e6255d64817a0a03b679', -- A sample SHA1 hash
+        'Admin',
+        'Active',
+        '2025-08-27',
+        (SELECT user_id FROM users WHERE user_email = 'user01@example.com'),
+        0,
+        'https://example.com/profiles/charlie.jpg',
+        '555-555-5555',
+        false
+    );
+
 
 CREATE TABLE login_sessions (
     login_session_id BIGSERIAL NOT NULL,

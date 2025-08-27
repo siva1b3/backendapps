@@ -197,7 +197,7 @@ model users {
   failed_login_attempts                                    Int                     @default(0)
   profile_picture_url                                      String?
   phone_number                                             String?                 @db.VarChar(20)
-  created_by_id                                            BigInt?
+  created_by_id                                            BigInt
   is_active                                                Boolean                 @default(true)
   created_time                                             DateTime                @default(now()) @db.Timestamp(6)
   modified_time                                            DateTime?               @db.Timestamp(6)
@@ -211,7 +211,7 @@ model users {
   task_assignees_task_assignees_assigned_by_user_idTousers task_assignees[]        @relation("task_assignees_assigned_by_user_idTousers")
   task_assignees_task_assignees_user_idTousers             task_assignees[]        @relation("task_assignees_user_idTousers")
   task_comments                                            task_comments[]
-  users                                                    users?                  @relation("usersTousers", fields: [created_by_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_users__created_by_id")
+  users                                                    users                   @relation("usersTousers", fields: [created_by_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_users__created_by_id")
   other_users                                              users[]                 @relation("usersTousers")
   user_roles                                               user_roles              @relation(fields: [user_role], references: [role_name], onDelete: NoAction, onUpdate: NoAction, map: "FK_users__user_role")
   user_statuses                                            user_statuses           @relation(fields: [user_status], references: [user_status], onDelete: NoAction, onUpdate: NoAction, map: "FK_users__user_status")
