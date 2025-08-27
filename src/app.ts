@@ -8,6 +8,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("api/v1/roles", userRolesRouter);
+app.use("/api/v1/roles", userRolesRouter);
 
 export default app;
