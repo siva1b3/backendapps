@@ -24,7 +24,7 @@ services:
       - 001_basic_curd_postgres_data:/var/lib/postgresql/data
       - ./initdb:/docker-entrypoint-initdb.d   # 👈 mount SQL init scripts
     networks:
-      - 001_basic_curd_postgres_network
+      - 001_basic_curd_global_network
 
   001_basic_curd_pgadmin_service:
     image: dpage/pgadmin4:latest
