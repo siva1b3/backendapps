@@ -6,25 +6,28 @@ async function getUserRoles(req: Request, res: Response) {
   let isactive = req.query.is_active as string | undefined;
 
   if (isactive === undefined) {
-    isactive = "true"; // Default to true if not provided
+    isactive = "true"; // default
   }
 
-  if (isactive !== "true" && isactive !== "false") {
+  if (!["true", "false", "all"].includes(isactive)) {
     return res.status(400).json({
       success: false,
-      message: "is_active must be 'true' or 'false'",
+      message: "is_active must be 'true', 'false', or 'all'",
     });
   }
 
-  const is_active_bool = isactive === "true";
-
   try {
-    const roles = await userRolesService.getUserRoles(is_active_bool);
+    const roles = await userRolesService.getUserRoles(isactive);
 
     if (!roles || roles.length === 0) {
       return res.status(404).json({
         success: false,
-        message: is_active_bool ? "No active roles found" : "No roles found",
+        message:
+          isactive === "true"
+            ? "No active roles found"
+            : isactive === "false"
+            ? "No inactive roles found"
+            : "No roles found",
       });
     }
 

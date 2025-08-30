@@ -2,10 +2,14 @@
 import prisma from "../prisma/prisma.js";
 
 // Fetch all active roles
-async function getUserRoles(is_active_bool: boolean) {
+async function getUserRoles(isactive: string) {
   try {
+    if (isactive === "all") {
+      return await prisma.user_roles.findMany(); // no filter
+    }
+
     return await prisma.user_roles.findMany({
-      where: { is_active: is_active_bool },
+      where: { is_active: isactive === "true" },
     });
   } catch (error) {
     console.error("Error fetching user roles:", error);
