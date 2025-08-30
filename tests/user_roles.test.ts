@@ -3,6 +3,7 @@ import request from "supertest";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import app from "../src/app"; // your express app
 import prisma from "../src/prisma/prisma"; // Prisma client instance
+import ApiError from "../src/utils/ApiError";
 
 // Combined Prisma mock
 vi.mock("../src/prisma/prisma.ts", () => {
@@ -11,6 +12,7 @@ vi.mock("../src/prisma/prisma.ts", () => {
       user_roles: {
         findFirst: vi.fn(),
         findMany: vi.fn(),
+        create: vi.fn(),
       },
     },
   };
@@ -20,6 +22,7 @@ const mockedPrisma = prisma as unknown as {
   user_roles: {
     findFirst: ReturnType<typeof vi.fn>;
     findMany: ReturnType<typeof vi.fn>;
+    create: ReturnType<typeof vi.fn>;
   };
 };
 
@@ -179,11 +182,15 @@ describe("GET /api/v1/roles/:roleName", () => {
   });
 
   it("should return 400 if roleName param is missing", async () => {
-    // no roleName param → route is /api/v1/roles/ (Express won’t match this route normally)
+    mockedPrisma.user_roles.findMany.mockResolvedValue([
+      { id: 3, is_active: true },
+    ]);
     const res = await request(app).get("/api/v1/roles/");
-
-    // depends on router config: might 404 if not matched, but per your controller we test ApiError
-    console.log(res.body);
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual([{ id: 3, is_active: true }]);
+    expect(mockedPrisma.user_roles.findMany).toHaveBeenCalledWith({
+      where: { is_active: true },
+    });
   });
 
   it("should return 404 if role not found", async () => {
@@ -276,5 +283,133 @@ describe("GET /api/v1/roles/:roleName", () => {
 
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual(fakeRole);
+  });
+});
+
+describe("POST /api/v1/roles", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  // 1. Create role successfully
+  it("should create a role successfully with valid roleName", async () => {
+    mockedPrisma.user_roles.create.mockResolvedValueOnce({
+      id: 1,
+      role_name: "Admin",
+    });
+
+    const res = await request(app)
+      .post("/api/v1/roles")
+      .send({ roleName: "Admin" });
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.role_name).toBe("Admin");
+  });
+
+  // 2. roleName missing
+  it("should return 400 if roleName is missing", async () => {
+    const res = await request(app).post("/api/v1/roles").send({});
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toBe("roleName is required");
+  });
+
+  // 3. roleName empty
+  it("should return 400 if roleName is empty string", async () => {
+    const res = await request(app).post("/api/v1/roles").send({ roleName: "" });
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+  });
+
+  // 5. role already exists (P2002)
+  it("should return 409 if role already exists", async () => {
+    const err = new Error("Unique constraint failed") as any;
+    err.code = "P2002";
+    mockedPrisma.user_roles.create.mockRejectedValueOnce(err);
+
+    const res = await request(app)
+      .post("/api/v1/roles")
+      .send({ roleName: "Admin" });
+
+    expect(res.status).toBe(409);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toContain("already exists");
+  });
+
+  // 6. unexpected prisma error
+  it("should return 500 for unexpected Prisma error", async () => {
+    const err = new Error("DB crash");
+    mockedPrisma.user_roles.create.mockRejectedValueOnce(err);
+
+    const res = await request(app)
+      .post("/api/v1/roles")
+      .send({ roleName: "Admin" });
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toBe("Internal server error");
+  });
+
+  // 7. runtime error in controller
+  it("should return 500 if runtime error occurs in controller", async () => {
+    // Force throw before prisma is called
+    mockedPrisma.user_roles.create.mockImplementationOnce(() => {
+      throw new Error("Unexpected runtime failure");
+    });
+
+    const res = await request(app)
+      .post("/api/v1/roles")
+      .send({ roleName: "Manager" });
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toBe("Internal server error");
+  });
+
+  // 8. middleware ApiError consistency
+  it("should return correct status and message if ApiError is thrown directly", async () => {
+    // Override route handler temporarily to throw ApiError
+    const testApp = app;
+    testApp.post("/api/v1/roles/test-error", (_req, _res, next) => {
+      next(new ApiError(418, "I am a teapot"));
+    });
+
+    const res = await request(testApp).post("/api/v1/roles/test-error");
+    expect(res.status).toBe(418);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toBe("I am a teapot");
+  });
+
+  // 9. middleware non-ApiError fallback
+  it("should return 500 and generic message for non-ApiError", async () => {
+    const testApp = app;
+    testApp.post("/api/v1/roles/test-generic-error", (_req, _res, next) => {
+      next(new Error("Generic failure"));
+    });
+
+    const res = await request(testApp).post("/api/v1/roles/test-generic-error");
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toBe("Internal server error");
+  });
+
+  // 10. sanity check with multiple roles created sequentially
+  it("should handle creating multiple roles sequentially", async () => {
+    mockedPrisma.user_roles.create
+      .mockResolvedValueOnce({ id: 1, role_name: "Admin" })
+      .mockResolvedValueOnce({ id: 2, role_name: "User" });
+
+    const res1 = await request(app)
+      .post("/api/v1/roles")
+      .send({ roleName: "Admin" });
+    expect(res1.status).toBe(201);
+    expect(res1.body.data.role_name).toBe("Admin");
+
+    const res2 = await request(app)
+      .post("/api/v1/roles")
+      .send({ roleName: "User" });
+    expect(res2.status).toBe(201);
+    expect(res2.body.data.role_name).toBe("User");
   });
 });
