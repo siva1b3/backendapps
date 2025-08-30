@@ -1,3 +1,3 @@
-import userRolesService from "./user_roles.service.js";
+import * as userRolesService from "./user_roles.service.js";
 
 export { userRolesService };

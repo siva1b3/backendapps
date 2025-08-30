@@ -1,126 +1,102 @@
-import { Request, Response } from "express";
+// src/controllers/userRoles.controller.ts
+import { Request, Response, NextFunction } from "express";
 import { userRolesService } from "../services/index.service.js";
+import ApiError from "../utils/ApiError.js";
 
-// ✅ Fetch all active roles
-async function getUserRoles(req: Request, res: Response) {
-  let isactive = req.query.is_active as string | undefined;
-
-  if (isactive === undefined) {
-    isactive = "true"; // default
-  }
-
-  if (!["true", "false", "all"].includes(isactive)) {
-    return res.status(400).json({
-      success: false,
-      message: "is_active must be 'true', 'false', or 'all'",
-    });
-  }
-
+// GET all roles
+export async function getUserRoles(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    const roles = await userRolesService.getUserRoles(isactive);
-
-    if (!roles || roles.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message:
-          isactive === "true"
-            ? "No active roles found"
-            : isactive === "false"
-            ? "No inactive roles found"
-            : "No roles found",
-      });
+    const isActive = (req.query.is_active as string) ?? "true";
+    if (!["true", "false", "all"].includes(isActive)) {
+      throw new ApiError(400, "is_active must be 'true', 'false', or 'all'");
     }
-
+    const roles = await userRolesService.getUserRoles(isActive);
     res.status(200).json({ success: true, data: roles });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Failed to fetch roles" });
+    next(error);
   }
 }
 
-// ✅ Fetch single role by name
-async function getOneUserRole(req: Request, res: Response) {
-  const { roleName } = req.params;
-  if (!roleName) {
-    return res
-      .status(400)
-      .json({ success: false, message: "roleName is required" });
-  }
-
+// GET single role
+export async function getUserRoleByName(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    const role = await userRolesService.getOneUserRole(roleName);
+    const { roleName } = req.params;
+    if (!roleName) throw new ApiError(400, "roleName is required");
 
-    if (!role) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Role not found" });
-    }
+    const role = await userRolesService.getUserRoleByName(roleName);
+    if (!role) throw new ApiError(404, "Role not found");
 
     res.status(200).json({ success: true, data: role });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Failed to fetch role" });
+    next(error);
   }
 }
 
-// ✅ Create role
-async function createUserRole(req: Request, res: Response) {
-  const { roleName } = req.body;
-  if (!roleName) {
-    return res
-      .status(400)
-      .json({ success: false, message: "roleName is required" });
-  }
+// CREATE role
+export async function createUserRole(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
+    const { roleName } = req.body;
+    if (!roleName) throw new ApiError(400, "roleName is required");
+
     const role = await userRolesService.createUserRole(roleName);
     res.status(201).json({ success: true, data: role });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Failed to create role" });
+    next(error);
   }
 }
 
-// ✅ Update role
-async function updateUserRole(req: Request, res: Response) {
-  const { oldRoleName, newRoleName } = req.body;
-  if (!oldRoleName || !newRoleName) {
-    return res.status(400).json({
-      success: false,
-      message: "Both oldRoleName and newRoleName are required",
-    });
-  }
+// UPDATE role
+export async function updateUserRole(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
+    const { roleName } = req.params;
+    const { newRoleName } = req.body;
+
+    if (!roleName || !newRoleName) {
+      throw new ApiError(
+        400,
+        "Both roleName (param) and newRoleName (body) are required"
+      );
+    }
+
     const updatedRole = await userRolesService.updateUserRole(
-      oldRoleName,
+      roleName,
       newRoleName
     );
     res.status(200).json({ success: true, data: updatedRole });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Failed to update role" });
+    next(error);
   }
 }
 
-// ✅ Deactivate role
-async function deactivateUserRole(req: Request, res: Response) {
-  const { roleName } = req.params;
-  if (!roleName) {
-    return res
-      .status(400)
-      .json({ success: false, message: "roleName is required" });
-  }
+// DEACTIVATE role
+export async function deactivateUserRole(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
+    const { roleName } = req.params;
+    if (!roleName) throw new ApiError(400, "roleName is required");
+
     const role = await userRolesService.deactivateUserRole(roleName);
     res.status(200).json({ success: true, data: role });
   } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to deactivate role" });
+    next(error);
   }
 }
-
-const userRolesController = {
-  getUserRoles,
-  getOneUserRole,
-  createUserRole,
-  updateUserRole,
-  deactivateUserRole,
-};
-
-export default userRolesController;

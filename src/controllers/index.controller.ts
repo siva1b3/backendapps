@@ -1,3 +1,3 @@
-import userRolesController from "./user_roles.controller.js";
+import * as userRolesController from "./user_roles.controller.js";
 
 export { userRolesController };

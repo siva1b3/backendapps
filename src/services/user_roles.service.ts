@@ -1,81 +1,67 @@
-// db/client.ts
+// src/services/userRoles.service.ts
 import prisma from "../prisma/prisma.js";
+import ApiError from "../utils/ApiError.js";
 
-// Fetch all active roles
-async function getUserRoles(isactive: string) {
-  try {
-    if (isactive === "all") {
-      return await prisma.user_roles.findMany(); // no filter
-    }
-
-    return await prisma.user_roles.findMany({
-      where: { is_active: isactive === "true" },
-    });
-  } catch (error) {
-    console.error("Error fetching user roles:", error);
-    throw error;
+// GET all roles
+export async function getUserRoles(isActive: string) {
+  if (isActive === "all") {
+    return prisma.user_roles.findMany();
   }
+  return prisma.user_roles.findMany({
+    where: { is_active: isActive === "true" },
+  });
 }
 
-// Fetch one role by name
-async function getOneUserRole(roleName: string) {
-  try {
-    return await prisma.user_roles.findUnique({
-      where: { role_name: roleName, is_active: true },
-    });
-  } catch (error) {
-    console.error(`Error fetching role "${roleName}":`, error);
-    throw error;
-  }
+// GET single role
+export async function getUserRoleByName(roleName: string) {
+  return prisma.user_roles.findFirst({
+    where: { role_name: roleName },
+  });
 }
 
-// Create a new role
-async function createUserRole(roleName: string) {
+// CREATE role
+export async function createUserRole(roleName: string) {
   try {
     return await prisma.user_roles.create({
       data: { role_name: roleName },
     });
-  } catch (error) {
-    console.error(`Error creating role "${roleName}":`, error);
+  } catch (error: any) {
+    if (error.code === "P2002") {
+      throw new ApiError(409, `Role "${roleName}" already exists`);
+    }
     throw error;
   }
 }
 
-// Update role name
-async function updateUserRole(oldRoleName: string, newRoleName: string) {
+// UPDATE role
+export async function updateUserRole(oldRoleName: string, newRoleName: string) {
   try {
     return await prisma.user_roles.update({
       where: { role_name: oldRoleName },
       data: { role_name: newRoleName },
     });
-  } catch (error) {
-    console.error(
-      `Error updating role from "${oldRoleName}" to "${newRoleName}":`,
-      error
-    );
+  } catch (error: any) {
+    if (error.code === "P2025") {
+      throw new ApiError(404, `Role "${oldRoleName}" not found`);
+    }
+    if (error.code === "P2002") {
+      throw new ApiError(409, `Role "${newRoleName}" already exists`);
+    }
     throw error;
   }
 }
 
-// Soft delete role
-async function deactivateUserRole(roleName: string) {
+// DEACTIVATE role
+export async function deactivateUserRole(roleName: string) {
   try {
     return await prisma.user_roles.update({
       where: { role_name: roleName },
       data: { is_active: false },
     });
-  } catch (error) {
-    console.error(`Error deactivating role "${roleName}":`, error);
+  } catch (error: any) {
+    if (error.code === "P2025") {
+      throw new ApiError(404, `Role "${roleName}" not found`);
+    }
     throw error;
   }
 }
-
-const userRolesService = {
-  getUserRoles,
-  getOneUserRole,
-  createUserRole,
-  updateUserRole,
-  deactivateUserRole,
-};
-
-export default userRolesService;

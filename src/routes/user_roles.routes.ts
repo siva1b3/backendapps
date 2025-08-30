@@ -1,30 +1,30 @@
+// src/routes/userRoles.routes.ts
 import { Router } from "express";
-
 import { userRolesController } from "../controllers/index.controller.js";
 
 const {
   getUserRoles,
-  getOneUserRole,
+  getUserRoleByName,
   createUserRole,
   updateUserRole,
   deactivateUserRole,
 } = userRolesController;
 
-const userRolesRouter = Router();
+const router = Router();
 
-// GET /roles - fetch all active roles
-userRolesRouter.get("/", getUserRoles);
+// GET /roles?is_active=true|false|all
+router.get("/", getUserRoles);
 
-// GET /roles/:roleName - fetch one role
-userRolesRouter.get("/:roleName", getOneUserRole);
+// GET /roles/:roleName
+router.get("/:roleName", getUserRoleByName);
 
-// POST /roles - create a new role
-userRolesRouter.post("/", createUserRole);
+// POST /roles
+router.post("/", createUserRole);
 
-// PUT /roles - update role name
-userRolesRouter.put("/", updateUserRole);
+// PUT /roles/:roleName
+router.put("/:roleName", updateUserRole);
 
-// PATCH /roles/:roleName/deactivate - soft delete
-userRolesRouter.patch("/:roleName/deactivate", deactivateUserRole);
+// PATCH /roles/:roleName/deactivate
+router.patch("/:roleName/deactivate", deactivateUserRole);
 
-export default userRolesRouter;
+export default router;
