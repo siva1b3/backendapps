@@ -24,7 +24,7 @@ router.post("/", createUserRole);
 // PUT /roles/:roleName
 router.put("/:roleName", updateUserRole);
 
-// PATCH /roles/:roleName/deactivate
-router.patch("/:roleName/deactivate", deactivateUserRole);
+// DELETE /roles/:roleName/deactivate
+router.delete("/:roleName/deactivate", deactivateUserRole);
 
 export default router;

@@ -74,10 +74,15 @@ export async function updateUserRole(
     const { roleName } = req.params;
     const { newRoleName } = req.body;
 
-    if (!roleName || !newRoleName) {
+    if (
+      typeof roleName !== "string" ||
+      roleName.trim().length === 0 ||
+      typeof newRoleName !== "string" ||
+      newRoleName.trim().length === 0
+    ) {
       throw new ApiError(
         400,
-        "Both roleName (param) and newRoleName (body) are required"
+        "Both roleName (param) and newRoleName (body) are required and must be non-empty strings"
       );
     }
 
@@ -99,8 +104,12 @@ export async function deactivateUserRole(
 ) {
   try {
     const { roleName } = req.params;
-    if (!roleName) throw new ApiError(400, "roleName is required");
-
+    if (typeof roleName !== "string" || roleName.trim().length === 0) {
+      throw new ApiError(
+        400,
+        "roleName is required and must be a non-empty string"
+      );
+    }
     const role = await userRolesService.deactivateUserRole(roleName);
     res.status(200).json({ success: true, data: role });
   } catch (error) {
