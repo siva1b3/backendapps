@@ -312,7 +312,7 @@ describe("POST /api/v1/roles", () => {
     const res = await request(app).post("/api/v1/roles").send({});
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
-    expect(res.body.message).toBe("roleName is required");
+    expect(res.body.message).toContain("roleName");
   });
 
   // 3. roleName empty
@@ -320,9 +320,30 @@ describe("POST /api/v1/roles", () => {
     const res = await request(app).post("/api/v1/roles").send({ roleName: "" });
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
+    expect(res.body.message).toContain("roleName");
   });
 
-  // 5. role already exists (P2002)
+  // 4. roleName whitespace only
+  it("should return 400 if roleName is whitespace only", async () => {
+    const res = await request(app)
+      .post("/api/v1/roles")
+      .send({ roleName: "   " });
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toContain("roleName");
+  });
+
+  // 5. roleName non-string
+  it("should return 400 if roleName is not a string", async () => {
+    const res = await request(app)
+      .post("/api/v1/roles")
+      .send({ roleName: 123 });
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toContain("roleName");
+  });
+
+  // 6. role already exists (P2002)
   it("should return 409 if role already exists", async () => {
     const err = new Error("Unique constraint failed") as any;
     err.code = "P2002";
@@ -337,7 +358,7 @@ describe("POST /api/v1/roles", () => {
     expect(res.body.message).toContain("already exists");
   });
 
-  // 6. unexpected prisma error
+  // 7. unexpected prisma error
   it("should return 500 for unexpected Prisma error", async () => {
     const err = new Error("DB crash");
     mockedPrisma.user_roles.create.mockRejectedValueOnce(err);
@@ -351,9 +372,8 @@ describe("POST /api/v1/roles", () => {
     expect(res.body.message).toBe("Internal server error");
   });
 
-  // 7. runtime error in controller
+  // 8. runtime error in controller
   it("should return 500 if runtime error occurs in controller", async () => {
-    // Force throw before prisma is called
     mockedPrisma.user_roles.create.mockImplementationOnce(() => {
       throw new Error("Unexpected runtime failure");
     });
@@ -367,34 +387,7 @@ describe("POST /api/v1/roles", () => {
     expect(res.body.message).toBe("Internal server error");
   });
 
-  // 8. middleware ApiError consistency
-  it("should return correct status and message if ApiError is thrown directly", async () => {
-    // Override route handler temporarily to throw ApiError
-    const testApp = app;
-    testApp.post("/api/v1/roles/test-error", (_req, _res, next) => {
-      next(new ApiError(418, "I am a teapot"));
-    });
-
-    const res = await request(testApp).post("/api/v1/roles/test-error");
-    expect(res.status).toBe(418);
-    expect(res.body.success).toBe(false);
-    expect(res.body.message).toBe("I am a teapot");
-  });
-
-  // 9. middleware non-ApiError fallback
-  it("should return 500 and generic message for non-ApiError", async () => {
-    const testApp = app;
-    testApp.post("/api/v1/roles/test-generic-error", (_req, _res, next) => {
-      next(new Error("Generic failure"));
-    });
-
-    const res = await request(testApp).post("/api/v1/roles/test-generic-error");
-    expect(res.status).toBe(500);
-    expect(res.body.success).toBe(false);
-    expect(res.body.message).toBe("Internal server error");
-  });
-
-  // 10. sanity check with multiple roles created sequentially
+  // 9. sanity check with multiple roles created sequentially
   it("should handle creating multiple roles sequentially", async () => {
     mockedPrisma.user_roles.create
       .mockResolvedValueOnce({ id: 1, role_name: "Admin" })

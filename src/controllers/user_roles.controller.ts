@@ -48,7 +48,14 @@ export async function createUserRole(
 ) {
   try {
     const { roleName } = req.body;
-    if (!roleName) throw new ApiError(400, "roleName is required");
+    console.log("Creating role with name:", roleName);
+
+    if (typeof roleName !== "string" || roleName.trim().length === 0) {
+      throw new ApiError(
+        400,
+        "roleName is required and must be a non-empty string"
+      );
+    }
 
     const role = await userRolesService.createUserRole(roleName);
     res.status(201).json({ success: true, data: role });
