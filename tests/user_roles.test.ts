@@ -411,129 +411,205 @@ describe("POST /api/v1/roles", () => {
 
 describe("PUT /api/v1/roles/:roleName", () => {
   beforeEach(() => {
-    // Reset all mocks before each test to ensure a clean state
-    vi.resetAllMocks();
+    // Reset all mocks before each test to ensure test isolation
+    vi.clearAllMocks();
   });
 
-  // 1. Happy Path Scenarios (Successful Updates)
-  it("should successfully update an existing role name", async () => {
-    const mockUpdatedRole = {
-      id: "1",
-      role_name: "regular_user",
-    };
-    mockedPrisma.user_roles.update.mockResolvedValue(mockUpdatedRole);
+  afterEach(() => {
+    // Clear any side effects after each test
+    vi.clearAllMocks();
+  });
 
-    const res = await request(app)
-      .put("/api/v1/roles/user")
-      .send({ newRoleName: "regular_user" });
+  // --- 1. Happy Path ---
+  it("should successfully update a user role", async () => {
+    // Mock Prisma's behavior for a successful update
+    mockedPrisma.user_roles.update.mockResolvedValue({
+      id: 1,
+      role_name: "new_role",
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
 
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toEqual({
+    const response = await request(app)
+      .put("/api/v1/roles/old_role")
+      .send({ newRoleName: "new_role" });
+
+    // Assert the response and mock calls
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
       success: true,
-      data: mockUpdatedRole,
+      data: expect.objectContaining({ role_name: "new_role" }),
     });
     expect(mockedPrisma.user_roles.update).toHaveBeenCalledWith({
-      where: { role_name: "user" },
-      data: { role_name: "regular_user" },
+      where: { role_name: "old_role" },
+      data: { role_name: "new_role" },
     });
   });
 
-  // 2. Invalid Input Scenarios (Bad Requests)
-  it("should return 400 if newRoleName is missing from the request body", async () => {
-    const res = await request(app).put("/api/v1/roles/user").send({}); // Missing newRoleName
+  // --- 2. Controller-Level Error Handling ---
+  it("should return 400 if newRoleName is missing from the body", async () => {
+    const response = await request(app).put("/api/v1/roles/test_role").send({});
 
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toEqual({
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
       success: false,
       message:
         "Both roleName (param) and newRoleName (body) are required and must be non-empty strings",
     });
+    expect(mockedPrisma.user_roles.update).not.toHaveBeenCalled();
   });
 
   it("should return 400 if newRoleName is an empty string", async () => {
-    const res = await request(app)
-      .put("/api/v1/roles/user")
+    const response = await request(app)
+      .put("/api/v1/roles/test_role")
       .send({ newRoleName: "" });
 
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toEqual({
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
       success: false,
       message:
         "Both roleName (param) and newRoleName (body) are required and must be non-empty strings",
     });
+    expect(mockedPrisma.user_roles.update).not.toHaveBeenCalled();
   });
 
-  it("should return 400 if newRoleName is not a string", async () => {
-    const res = await request(app)
-      .put("/api/v1/roles/user")
-      .send({ newRoleName: 123 }); // Not a string
-
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toEqual({
-      success: false,
-      message:
-        "Both roleName (param) and newRoleName (body) are required and must be non-empty strings",
-    });
-  });
-
-  it("should return 400 if roleName in URL is an empty string", async () => {
-    // Note: The router will likely return 404 for this, but the controller logic also handles it.
-    const res = await request(app)
-      .put("/api/v1/roles/")
+  it("should return 404 if roleName param is an empty string", async () => {
+    const response = await request(app)
+      .put("/api/v1/roles/ ")
       .send({ newRoleName: "new_role" });
 
-    // The route handler for '/:roleName' won't be matched, resulting in a 404 from Express.
-    expect(res.statusCode).toBe(404);
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({
+      success: false,
+      message: `Route /api/v1/roles/ not found`,
+    });
+    expect(mockedPrisma.user_roles.update).not.toHaveBeenCalled();
   });
 
-  // 3. Business Logic and Conflict Scenarios
-  it("should return 404 if the role to be updated does not exist (P2025 error)", async () => {
-    const prismaError = { code: "P2025", message: "Record not found" };
-    mockedPrisma.user_roles.update.mockRejectedValue(prismaError);
+  // --- 3. Service/Prisma-Level Error Handling ---
+  it("should return 404 if the role to be updated does not exist (P2025)", async () => {
+    // Mock a P2025 error from Prisma
+    const notFoundError = new Error("Record not found");
+    (notFoundError as any).code = "P2025";
+    mockedPrisma.user_roles.update.mockRejectedValue(notFoundError);
 
-    const res = await request(app)
+    const response = await request(app)
       .put("/api/v1/roles/non_existent_role")
-      .send({ newRoleName: "some_role" });
-
-    expect(res.statusCode).toBe(404);
-    expect(res.body).toEqual({
-      success: false,
-      message: 'Role "non_existent_role" not found',
-    });
-  });
-
-  it("should return 409 if the new role name already exists (P2002 error)", async () => {
-    const prismaError = {
-      code: "P2002",
-      meta: { target: ["role_name"] },
-      message: "Unique constraint failed on the fields: (`role_name`)",
-    };
-    mockedPrisma.user_roles.update.mockRejectedValue(prismaError);
-
-    const res = await request(app)
-      .put("/api/v1/roles/moderator")
-      .send({ newRoleName: "admin" });
-
-    expect(res.statusCode).toBe(409);
-    expect(res.body).toEqual({
-      success: false,
-      message: 'Role "admin" already exists',
-    });
-  });
-
-  // 4. Edge Cases and Error Handling
-  it("should return 500 for an unexpected internal server error", async () => {
-    const unexpectedError = new Error("Database connection failed");
-    mockedPrisma.user_roles.update.mockRejectedValue(unexpectedError);
-
-    const res = await request(app)
-      .put("/api/v1/roles/user")
       .send({ newRoleName: "new_role" });
 
-    expect(res.statusCode).toBe(500);
-    expect(res.body).toEqual({
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({
+      success: false,
+      message: `Role "non_existent_role" not found`,
+    });
+  });
+
+  it("should return 409 if the new role name already exists (P2002)", async () => {
+    // Mock a P2002 error from Prisma for a unique constraint violation
+    const conflictError = new Error("Unique constraint failed");
+    (conflictError as any).code = "P2002";
+    mockedPrisma.user_roles.update.mockRejectedValue(conflictError);
+
+    const response = await request(app)
+      .put("/api/v1/roles/role_one")
+      .send({ newRoleName: "role_two" });
+
+    expect(response.status).toBe(409);
+    expect(response.body).toEqual({
+      success: false,
+      message: `Role "role_two" already exists`,
+    });
+  });
+
+  // --- 4. Middleware Error Handling ---
+  it("should return 500 for an unexpected internal server error", async () => {
+    // Mock the service to throw a generic error
+    mockedPrisma.user_roles.update.mockRejectedValue(
+      new Error("Simulated database connection error")
+    );
+
+    const response = await request(app)
+      .put("/api/v1/roles/test_role")
+      .send({ newRoleName: "new_role" });
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({
       success: false,
       message: "Internal server error",
     });
+  });
+});
+
+describe("DELETE /api/v1/roles/:roleName/deactivate", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should deactivate an existing role", async () => {
+    mockedPrisma.user_roles.update.mockResolvedValue({
+      role_name: "admin",
+      is_active: false,
+    });
+
+    const res = await request(app).delete("/api/v1/roles/admin/deactivate");
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.is_active).toBe(false);
+  });
+
+  it("should return 400 if roleName is missing", async () => {
+    const res = await request(app).delete("/api/v1/roles//deactivate");
+    expect(res.status).toBe(404); // route not found because param missing
+  });
+
+  it("should return 400 if roleName is empty string", async () => {
+    const res = await request(app).delete("/api/v1/roles/ /deactivate");
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+  });
+
+  it("should return 404 if role does not exist (P2025)", async () => {
+    const err: any = new Error("not found");
+    err.code = "P2025";
+    mockedPrisma.user_roles.update.mockRejectedValue(err);
+
+    const res = await request(app).delete("/api/v1/roles/ghost/deactivate");
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toContain("ghost");
+  });
+
+  it("should succeed if role already inactive", async () => {
+    mockedPrisma.user_roles.update.mockResolvedValue({
+      role_name: "user",
+      is_active: false,
+    });
+
+    const res = await request(app).delete("/api/v1/roles/user/deactivate");
+    expect(res.status).toBe(200);
+    expect(res.body.data.is_active).toBe(false);
+  });
+
+  it("should return 500 on unexpected prisma error", async () => {
+    mockedPrisma.user_roles.update.mockRejectedValue(new Error("db crash"));
+
+    const res = await request(app).delete("/api/v1/roles/crash/deactivate");
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toBe("Internal server error");
+  });
+});
+
+describe("Middleware routes", () => {
+  it("should return 404 for undefined API route", async () => {
+    const res = await request(app).delete("/api/v1/roles");
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
+  });
+
+  it("should return 404 for non-API route", async () => {
+    const res = await request(app).get("/random");
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
   });
 });

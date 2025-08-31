@@ -48,7 +48,6 @@ export async function createUserRole(
 ) {
   try {
     const { roleName } = req.body;
-    console.log("Creating role with name:", roleName);
 
     if (typeof roleName !== "string" || roleName.trim().length === 0) {
       throw new ApiError(
