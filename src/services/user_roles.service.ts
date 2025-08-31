@@ -3,7 +3,7 @@ import prisma from "../prisma/prisma.js";
 import ApiError from "../utils/ApiError.js";
 
 // GET all roles
-export async function getUserRoles(isActive: string) {
+export async function getUserRolesService(isActive: string) {
   if (isActive === "all") {
     return prisma.user_roles.findMany();
   }
@@ -13,14 +13,14 @@ export async function getUserRoles(isActive: string) {
 }
 
 // GET single role
-export async function getUserRoleByName(roleName: string) {
+export async function getUserRoleByNameService(roleName: string) {
   return prisma.user_roles.findFirst({
     where: { role_name: roleName },
   });
 }
 
 // CREATE role
-export async function createUserRole(roleName: string) {
+export async function createUserRoleService(roleName: string) {
   try {
     return await prisma.user_roles.create({
       data: { role_name: roleName },
@@ -34,7 +34,10 @@ export async function createUserRole(roleName: string) {
 }
 
 // UPDATE role
-export async function updateUserRole(oldRoleName: string, newRoleName: string) {
+export async function updateUserRoleService(
+  oldRoleName: string,
+  newRoleName: string
+) {
   try {
     return await prisma.user_roles.update({
       where: { role_name: oldRoleName },
@@ -52,7 +55,7 @@ export async function updateUserRole(oldRoleName: string, newRoleName: string) {
 }
 
 // DEACTIVATE role
-export async function deactivateUserRole(roleName: string) {
+export async function deactivateUserRoleService(roleName: string) {
   try {
     return await prisma.user_roles.update({
       where: { role_name: roleName },

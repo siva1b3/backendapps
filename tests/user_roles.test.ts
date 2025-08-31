@@ -3,7 +3,6 @@ import request from "supertest";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import app from "../src/app"; // your express app
 import prisma from "../src/prisma/prisma"; // Prisma client instance
-import ApiError from "../src/utils/ApiError";
 
 // Combined Prisma mock
 vi.mock("../src/prisma/prisma.ts", () => {
@@ -28,7 +27,7 @@ const mockedPrisma = prisma as unknown as {
   };
 };
 
-describe("GET /api/v1/roles", () => {
+describe("GET /api/v1/user_roles", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -42,7 +41,7 @@ describe("GET /api/v1/roles", () => {
     mockedPrisma.user_roles.findMany.mockResolvedValue([
       { id: 1, is_active: true },
     ]);
-    const res = await request(app).get("/api/v1/roles?is_active=true");
+    const res = await request(app).get("/api/v1/user_roles?is_active=true");
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data).toEqual([{ id: 1, is_active: true }]);
@@ -55,7 +54,7 @@ describe("GET /api/v1/roles", () => {
     mockedPrisma.user_roles.findMany.mockResolvedValue([
       { id: 2, is_active: false },
     ]);
-    const res = await request(app).get("/api/v1/roles?is_active=false");
+    const res = await request(app).get("/api/v1/user_roles?is_active=false");
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual([{ id: 2, is_active: false }]);
     expect(mockedPrisma.user_roles.findMany).toHaveBeenCalledWith({
@@ -69,7 +68,7 @@ describe("GET /api/v1/roles", () => {
       { id: 2, is_active: false },
     ];
     mockedPrisma.user_roles.findMany.mockResolvedValue(fakeRoles);
-    const res = await request(app).get("/api/v1/roles?is_active=all");
+    const res = await request(app).get("/api/v1/user_roles?is_active=all");
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual(fakeRoles);
     expect(mockedPrisma.user_roles.findMany).toHaveBeenCalledWith();
@@ -79,7 +78,7 @@ describe("GET /api/v1/roles", () => {
     mockedPrisma.user_roles.findMany.mockResolvedValue([
       { id: 3, is_active: true },
     ]);
-    const res = await request(app).get("/api/v1/roles");
+    const res = await request(app).get("/api/v1/user_roles");
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual([{ id: 3, is_active: true }]);
     expect(mockedPrisma.user_roles.findMany).toHaveBeenCalledWith({
@@ -89,7 +88,7 @@ describe("GET /api/v1/roles", () => {
 
   // --- Invalid query params ---
   it("should return 400 for invalid query param", async () => {
-    const res = await request(app).get("/api/v1/roles?is_active=invalid");
+    const res = await request(app).get("/api/v1/user_roles?is_active=invalid");
     expect(res.status).toBe(400);
     expect(res.body.message).toBe(
       "is_active must be 'true', 'false', or 'all'"
@@ -97,33 +96,33 @@ describe("GET /api/v1/roles", () => {
   });
 
   it("should return 400 for case-sensitive mismatch", async () => {
-    const res = await request(app).get("/api/v1/roles?is_active=TRUE");
+    const res = await request(app).get("/api/v1/user_roles?is_active=TRUE");
     expect(res.status).toBe(400);
   });
 
   it("should return 400 for empty string param", async () => {
-    const res = await request(app).get("/api/v1/roles?is_active=");
+    const res = await request(app).get("/api/v1/user_roles?is_active=");
     expect(res.status).toBe(400);
   });
 
   // --- Data scenarios ---
   it("should return empty array if DB has no roles", async () => {
     mockedPrisma.user_roles.findMany.mockResolvedValue([]);
-    const res = await request(app).get("/api/v1/roles?is_active=all");
+    const res = await request(app).get("/api/v1/user_roles?is_active=all");
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual([]);
   });
 
   it("should return empty array when asking active but only inactive exist", async () => {
     mockedPrisma.user_roles.findMany.mockResolvedValue([]);
-    const res = await request(app).get("/api/v1/roles?is_active=true");
+    const res = await request(app).get("/api/v1/user_roles?is_active=true");
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual([]);
   });
 
   it("should return empty array when asking inactive but only active exist", async () => {
     mockedPrisma.user_roles.findMany.mockResolvedValue([]);
-    const res = await request(app).get("/api/v1/roles?is_active=false");
+    const res = await request(app).get("/api/v1/user_roles?is_active=false");
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual([]);
   });
@@ -132,7 +131,7 @@ describe("GET /api/v1/roles", () => {
     mockedPrisma.user_roles.findMany.mockResolvedValue([
       { id: 10, is_active: true },
     ]);
-    const res = await request(app).get("/api/v1/roles?is_active=true");
+    const res = await request(app).get("/api/v1/user_roles?is_active=true");
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual([{ id: 10, is_active: true }]);
   });
@@ -142,26 +141,26 @@ describe("GET /api/v1/roles", () => {
     mockedPrisma.user_roles.findMany.mockResolvedValue([
       { id: 1, is_active: true },
     ]);
-    const res = await request(app).get("/api/v1/roles");
+    const res = await request(app).get("/api/v1/user_roles");
     expect(res.body).toHaveProperty("success", true);
   });
 
   it("should include message field in error response", async () => {
-    const res = await request(app).get("/api/v1/roles?is_active=xyz");
+    const res = await request(app).get("/api/v1/user_roles?is_active=xyz");
     expect(res.body).toHaveProperty("message");
   });
 
   // --- Error handling ---
   it("should pass DB errors to error handler", async () => {
     mockedPrisma.user_roles.findMany.mockRejectedValue(new Error("DB failure"));
-    const res = await request(app).get("/api/v1/roles?is_active=true");
+    const res = await request(app).get("/api/v1/user_roles?is_active=true");
     expect(res.status).toBe(500); // assuming global error handler sets 500
     expect(res.body.success).toBe(false);
     expect(res.body.message).toContain("Internal server error");
   });
 });
 
-describe("GET /api/v1/roles/:roleName", () => {
+describe("GET /api/v1/user_roles/:roleName", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -174,7 +173,7 @@ describe("GET /api/v1/roles/:roleName", () => {
     const fakeRole = { id: 1, role_name: "admin" };
     mockedPrisma.user_roles.findFirst.mockResolvedValueOnce(fakeRole);
 
-    const res = await request(app).get("/api/v1/roles/admin");
+    const res = await request(app).get("/api/v1/user_roles/admin");
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
@@ -187,7 +186,7 @@ describe("GET /api/v1/roles/:roleName", () => {
     mockedPrisma.user_roles.findMany.mockResolvedValue([
       { id: 3, is_active: true },
     ]);
-    const res = await request(app).get("/api/v1/roles/");
+    const res = await request(app).get("/api/v1/user_roles/");
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual([{ id: 3, is_active: true }]);
     expect(mockedPrisma.user_roles.findMany).toHaveBeenCalledWith({
@@ -198,7 +197,7 @@ describe("GET /api/v1/roles/:roleName", () => {
   it("should return 404 if role not found", async () => {
     mockedPrisma.user_roles.findFirst.mockResolvedValueOnce(null);
 
-    const res = await request(app).get("/api/v1/roles/nonexistent");
+    const res = await request(app).get("/api/v1/user_roles/nonexistent");
 
     expect(res.status).toBe(404);
     expect(res.body).toEqual({
@@ -212,7 +211,7 @@ describe("GET /api/v1/roles/:roleName", () => {
       new Error("DB failure")
     );
 
-    const res = await request(app).get("/api/v1/roles/admin");
+    const res = await request(app).get("/api/v1/user_roles/admin");
 
     expect(res.status).toBe(500);
     expect(res.body).toEqual({
@@ -231,7 +230,7 @@ describe("GET /api/v1/roles/:roleName", () => {
       };
     });
 
-    const res = await request(app).get("/api/v1/roles/bad");
+    const res = await request(app).get("/api/v1/user_roles/bad");
 
     expect([400, 500]).toContain(res.status); // depends if error instanceof ApiError check passes
   });
@@ -239,7 +238,7 @@ describe("GET /api/v1/roles/:roleName", () => {
   it("should return error structure {success:false,message} on errors", async () => {
     mockedPrisma.user_roles.findFirst.mockResolvedValueOnce(null);
 
-    const res = await request(app).get("/api/v1/roles/unknown");
+    const res = await request(app).get("/api/v1/user_roles/unknown");
 
     expect(res.body).toHaveProperty("success", false);
     expect(res.body).toHaveProperty("message");
@@ -249,7 +248,7 @@ describe("GET /api/v1/roles/:roleName", () => {
     const fakeRole = { id: 2, role_name: "Admin" };
     mockedPrisma.user_roles.findFirst.mockResolvedValueOnce(fakeRole);
 
-    const res = await request(app).get("/api/v1/roles/Admin");
+    const res = await request(app).get("/api/v1/user_roles/Admin");
 
     expect(res.status).toBe(200);
     expect(res.body.data.role_name).toBe("Admin");
@@ -259,7 +258,7 @@ describe("GET /api/v1/roles/:roleName", () => {
     const fakeRole = { id: 3, role_name: "admin$" };
     mockedPrisma.user_roles.findFirst.mockResolvedValueOnce(fakeRole);
 
-    const res = await request(app).get("/api/v1/roles/admin%24"); // %24 = $
+    const res = await request(app).get("/api/v1/user_roles/admin%24"); // %24 = $
 
     expect(res.status).toBe(200);
     expect(res.body.data.role_name).toBe("admin$");
@@ -270,7 +269,7 @@ describe("GET /api/v1/roles/:roleName", () => {
     mockedPrisma.user_roles.findFirst.mockResolvedValueOnce(fakeRole);
 
     const res = await request(app).get(
-      "/api/v1/roles/" + encodeURIComponent("super user")
+      "/api/v1/user_roles/" + encodeURIComponent("super user")
     );
 
     expect(res.status).toBe(200);
@@ -281,14 +280,14 @@ describe("GET /api/v1/roles/:roleName", () => {
     const fakeRole = { id: 5, role_name: "editor" };
     mockedPrisma.user_roles.findFirst.mockResolvedValueOnce(fakeRole);
 
-    const res = await request(app).get("/api/v1/roles/editor");
+    const res = await request(app).get("/api/v1/user_roles/editor");
 
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual(fakeRole);
   });
 });
 
-describe("POST /api/v1/roles", () => {
+describe("POST /api/v1/user_roles", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -301,7 +300,7 @@ describe("POST /api/v1/roles", () => {
     });
 
     const res = await request(app)
-      .post("/api/v1/roles")
+      .post("/api/v1/user_roles")
       .send({ roleName: "Admin" });
 
     expect(res.status).toBe(201);
@@ -311,7 +310,7 @@ describe("POST /api/v1/roles", () => {
 
   // 2. roleName missing
   it("should return 400 if roleName is missing", async () => {
-    const res = await request(app).post("/api/v1/roles").send({});
+    const res = await request(app).post("/api/v1/user_roles").send({});
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
     expect(res.body.message).toContain("roleName");
@@ -319,7 +318,9 @@ describe("POST /api/v1/roles", () => {
 
   // 3. roleName empty
   it("should return 400 if roleName is empty string", async () => {
-    const res = await request(app).post("/api/v1/roles").send({ roleName: "" });
+    const res = await request(app)
+      .post("/api/v1/user_roles")
+      .send({ roleName: "" });
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
     expect(res.body.message).toContain("roleName");
@@ -328,7 +329,7 @@ describe("POST /api/v1/roles", () => {
   // 4. roleName whitespace only
   it("should return 400 if roleName is whitespace only", async () => {
     const res = await request(app)
-      .post("/api/v1/roles")
+      .post("/api/v1/user_roles")
       .send({ roleName: "   " });
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
@@ -338,7 +339,7 @@ describe("POST /api/v1/roles", () => {
   // 5. roleName non-string
   it("should return 400 if roleName is not a string", async () => {
     const res = await request(app)
-      .post("/api/v1/roles")
+      .post("/api/v1/user_roles")
       .send({ roleName: 123 });
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
@@ -352,7 +353,7 @@ describe("POST /api/v1/roles", () => {
     mockedPrisma.user_roles.create.mockRejectedValueOnce(err);
 
     const res = await request(app)
-      .post("/api/v1/roles")
+      .post("/api/v1/user_roles")
       .send({ roleName: "Admin" });
 
     expect(res.status).toBe(409);
@@ -366,7 +367,7 @@ describe("POST /api/v1/roles", () => {
     mockedPrisma.user_roles.create.mockRejectedValueOnce(err);
 
     const res = await request(app)
-      .post("/api/v1/roles")
+      .post("/api/v1/user_roles")
       .send({ roleName: "Admin" });
 
     expect(res.status).toBe(500);
@@ -381,7 +382,7 @@ describe("POST /api/v1/roles", () => {
     });
 
     const res = await request(app)
-      .post("/api/v1/roles")
+      .post("/api/v1/user_roles")
       .send({ roleName: "Manager" });
 
     expect(res.status).toBe(500);
@@ -396,20 +397,20 @@ describe("POST /api/v1/roles", () => {
       .mockResolvedValueOnce({ id: 2, role_name: "User" });
 
     const res1 = await request(app)
-      .post("/api/v1/roles")
+      .post("/api/v1/user_roles")
       .send({ roleName: "Admin" });
     expect(res1.status).toBe(201);
     expect(res1.body.data.role_name).toBe("Admin");
 
     const res2 = await request(app)
-      .post("/api/v1/roles")
+      .post("/api/v1/user_roles")
       .send({ roleName: "User" });
     expect(res2.status).toBe(201);
     expect(res2.body.data.role_name).toBe("User");
   });
 });
 
-describe("PUT /api/v1/roles/:roleName", () => {
+describe("PUT /api/v1/user_roles/:roleName", () => {
   beforeEach(() => {
     // Reset all mocks before each test to ensure test isolation
     vi.clearAllMocks();
@@ -431,7 +432,7 @@ describe("PUT /api/v1/roles/:roleName", () => {
     });
 
     const response = await request(app)
-      .put("/api/v1/roles/old_role")
+      .put("/api/v1/user_roles/old_role")
       .send({ newRoleName: "new_role" });
 
     // Assert the response and mock calls
@@ -448,7 +449,9 @@ describe("PUT /api/v1/roles/:roleName", () => {
 
   // --- 2. Controller-Level Error Handling ---
   it("should return 400 if newRoleName is missing from the body", async () => {
-    const response = await request(app).put("/api/v1/roles/test_role").send({});
+    const response = await request(app)
+      .put("/api/v1/user_roles/test_role")
+      .send({});
 
     expect(response.status).toBe(400);
     expect(response.body).toEqual({
@@ -461,7 +464,7 @@ describe("PUT /api/v1/roles/:roleName", () => {
 
   it("should return 400 if newRoleName is an empty string", async () => {
     const response = await request(app)
-      .put("/api/v1/roles/test_role")
+      .put("/api/v1/user_roles/test_role")
       .send({ newRoleName: "" });
 
     expect(response.status).toBe(400);
@@ -475,13 +478,13 @@ describe("PUT /api/v1/roles/:roleName", () => {
 
   it("should return 404 if roleName param is an empty string", async () => {
     const response = await request(app)
-      .put("/api/v1/roles/ ")
+      .put("/api/v1/user_roles/ ")
       .send({ newRoleName: "new_role" });
 
     expect(response.status).toBe(404);
     expect(response.body).toEqual({
       success: false,
-      message: `Route /api/v1/roles/ not found`,
+      message: `Route /api/v1/user_roles/ not found`,
     });
     expect(mockedPrisma.user_roles.update).not.toHaveBeenCalled();
   });
@@ -494,7 +497,7 @@ describe("PUT /api/v1/roles/:roleName", () => {
     mockedPrisma.user_roles.update.mockRejectedValue(notFoundError);
 
     const response = await request(app)
-      .put("/api/v1/roles/non_existent_role")
+      .put("/api/v1/user_roles/non_existent_role")
       .send({ newRoleName: "new_role" });
 
     expect(response.status).toBe(404);
@@ -511,7 +514,7 @@ describe("PUT /api/v1/roles/:roleName", () => {
     mockedPrisma.user_roles.update.mockRejectedValue(conflictError);
 
     const response = await request(app)
-      .put("/api/v1/roles/role_one")
+      .put("/api/v1/user_roles/role_one")
       .send({ newRoleName: "role_two" });
 
     expect(response.status).toBe(409);
@@ -529,7 +532,7 @@ describe("PUT /api/v1/roles/:roleName", () => {
     );
 
     const response = await request(app)
-      .put("/api/v1/roles/test_role")
+      .put("/api/v1/user_roles/test_role")
       .send({ newRoleName: "new_role" });
 
     expect(response.status).toBe(500);
@@ -540,7 +543,7 @@ describe("PUT /api/v1/roles/:roleName", () => {
   });
 });
 
-describe("DELETE /api/v1/roles/:roleName/deactivate", () => {
+describe("DELETE /api/v1/user_roles/:roleName/deactivate", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -551,19 +554,21 @@ describe("DELETE /api/v1/roles/:roleName/deactivate", () => {
       is_active: false,
     });
 
-    const res = await request(app).delete("/api/v1/roles/admin/deactivate");
+    const res = await request(app).delete(
+      "/api/v1/user_roles/admin/deactivate"
+    );
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.is_active).toBe(false);
   });
 
   it("should return 400 if roleName is missing", async () => {
-    const res = await request(app).delete("/api/v1/roles//deactivate");
+    const res = await request(app).delete("/api/v1/user_roles//deactivate");
     expect(res.status).toBe(404); // route not found because param missing
   });
 
   it("should return 400 if roleName is empty string", async () => {
-    const res = await request(app).delete("/api/v1/roles/ /deactivate");
+    const res = await request(app).delete("/api/v1/user_roles/ /deactivate");
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
   });
@@ -573,7 +578,9 @@ describe("DELETE /api/v1/roles/:roleName/deactivate", () => {
     err.code = "P2025";
     mockedPrisma.user_roles.update.mockRejectedValue(err);
 
-    const res = await request(app).delete("/api/v1/roles/ghost/deactivate");
+    const res = await request(app).delete(
+      "/api/v1/user_roles/ghost/deactivate"
+    );
     expect(res.status).toBe(404);
     expect(res.body.success).toBe(false);
     expect(res.body.message).toContain("ghost");
@@ -585,7 +592,7 @@ describe("DELETE /api/v1/roles/:roleName/deactivate", () => {
       is_active: false,
     });
 
-    const res = await request(app).delete("/api/v1/roles/user/deactivate");
+    const res = await request(app).delete("/api/v1/user_roles/user/deactivate");
     expect(res.status).toBe(200);
     expect(res.body.data.is_active).toBe(false);
   });
@@ -593,7 +600,9 @@ describe("DELETE /api/v1/roles/:roleName/deactivate", () => {
   it("should return 500 on unexpected prisma error", async () => {
     mockedPrisma.user_roles.update.mockRejectedValue(new Error("db crash"));
 
-    const res = await request(app).delete("/api/v1/roles/crash/deactivate");
+    const res = await request(app).delete(
+      "/api/v1/user_roles/crash/deactivate"
+    );
     expect(res.status).toBe(500);
     expect(res.body.success).toBe(false);
     expect(res.body.message).toBe("Internal server error");
@@ -602,7 +611,7 @@ describe("DELETE /api/v1/roles/:roleName/deactivate", () => {
 
 describe("Middleware routes", () => {
   it("should return 404 for undefined API route", async () => {
-    const res = await request(app).delete("/api/v1/roles");
+    const res = await request(app).delete("/api/v1/user_roles");
     expect(res.status).toBe(404);
     expect(res.body.success).toBe(false);
   });

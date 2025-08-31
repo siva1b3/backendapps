@@ -3,8 +3,16 @@ import { Request, Response, NextFunction } from "express";
 import { userRolesService } from "../services/index.service.js";
 import ApiError from "../utils/ApiError.js";
 
+const {
+  getUserRolesService,
+  getUserRoleByNameService,
+  createUserRoleService,
+  updateUserRoleService,
+  deactivateUserRoleService,
+} = userRolesService;
+
 // GET all roles
-export async function getUserRoles(
+export async function getUserRolesController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -14,7 +22,7 @@ export async function getUserRoles(
     if (!["true", "false", "all"].includes(isActive)) {
       throw new ApiError(400, "is_active must be 'true', 'false', or 'all'");
     }
-    const roles = await userRolesService.getUserRoles(isActive);
+    const roles = await getUserRolesService(isActive);
     res.status(200).json({ success: true, data: roles });
   } catch (error) {
     next(error);
@@ -22,7 +30,7 @@ export async function getUserRoles(
 }
 
 // GET single role
-export async function getUserRoleByName(
+export async function getUserRoleByNameController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -31,7 +39,7 @@ export async function getUserRoleByName(
     const { roleName } = req.params;
     if (!roleName) throw new ApiError(400, "roleName is required");
 
-    const role = await userRolesService.getUserRoleByName(roleName);
+    const role = await getUserRoleByNameService(roleName);
     if (!role) throw new ApiError(404, "Role not found");
 
     res.status(200).json({ success: true, data: role });
@@ -41,7 +49,7 @@ export async function getUserRoleByName(
 }
 
 // CREATE role
-export async function createUserRole(
+export async function createUserRoleController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -56,7 +64,7 @@ export async function createUserRole(
       );
     }
 
-    const role = await userRolesService.createUserRole(roleName);
+    const role = await createUserRoleService(roleName);
     res.status(201).json({ success: true, data: role });
   } catch (error) {
     next(error);
@@ -64,7 +72,7 @@ export async function createUserRole(
 }
 
 // UPDATE role
-export async function updateUserRole(
+export async function updateUserRoleController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -85,10 +93,7 @@ export async function updateUserRole(
       );
     }
 
-    const updatedRole = await userRolesService.updateUserRole(
-      roleName,
-      newRoleName
-    );
+    const updatedRole = await updateUserRoleService(roleName, newRoleName);
     res.status(200).json({ success: true, data: updatedRole });
   } catch (error) {
     next(error);
@@ -96,7 +101,7 @@ export async function updateUserRole(
 }
 
 // DEACTIVATE role
-export async function deactivateUserRole(
+export async function deactivateUserRoleController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -109,7 +114,7 @@ export async function deactivateUserRole(
         "roleName is required and must be a non-empty string"
       );
     }
-    const role = await userRolesService.deactivateUserRole(roleName);
+    const role = await deactivateUserRoleService(roleName);
     res.status(200).json({ success: true, data: role });
   } catch (error) {
     next(error);

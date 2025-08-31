@@ -10,7 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/v1/roles", userRolesRouter);
+app.use("/api/v1/user_roles", userRolesRouter);
 
 // 404 and error handling middleware
 app.use(notFoundHandler);
