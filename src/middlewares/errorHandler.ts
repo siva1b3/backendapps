@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from "express";
 import ApiError from "../utils/ApiError.js";
 
-export function errorHandler(
+export default function errorHandler(
   err: any,
   _req: Request,
   res: Response,

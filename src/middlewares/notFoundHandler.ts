@@ -1,7 +1,7 @@
 // src/middlewares/notFoundHandler.ts
 import { Request, Response, NextFunction } from "express";
 
-export function notFoundHandler(
+export default function notFoundHandler(
   req: Request,
   res: Response,
   _next: NextFunction
