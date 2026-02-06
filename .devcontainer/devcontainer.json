@@ -1,0 +1,31 @@
+{
+  "name": "pure-node-test",
+  "build": {
+    "dockerfile": "../Dockerfile"
+  },
+  "workspaceFolder": "/siva",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/siva,type=bind,consistency=cached",
+  "forwardPorts": [
+    3000
+  ],
+  // "mounts": [
+  //   "source=siva_node_modules,target=/siva/node_modules,type=volume",
+  //   "source=${localWorkspaceFolder}/.cache,target=/home/node/.cache,type=bind,consistency=cached"
+  // ],
+  "runArgs": [
+    "--init",
+    "--cap-add=SYS_PTRACE"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  // "initializeCommand": "test -d .devcontainer || mkdir .devcontainer",
+  // "postCreateCommand": "npm ci --no-audit --no-fund",
+  // "postStartCommand": "npm run dev",
+  "postAttachCommand": "echo 'Attached to container'"
+}
